@@ -1,9 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Comentario, Oportunidad } from '../../clases/oportunidad';
+import { Oportunidad } from '../../clases/oportunidad';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OportunidadService } from '../../services/oportunidad';
 import { take } from 'rxjs';
+import { LoginService } from '../../services/login-service';
+import { UsuarioService } from '../../services/usuario-service';
+import { Usuario } from '../../clases/usuario';
 
 
 
@@ -19,55 +22,54 @@ export class OportunidadComponent {
   @Input() oportunidad!: Oportunidad;
   @Output() cerrar = new EventEmitter<void>();
 
-  constructor(public oportunidadServices: OportunidadService){}
+  constructor(public oportunidadServices: OportunidadService,
+              public usuarioService: UsuarioService,
+              public loginService: LoginService
+  ){}
 
- 
+  usuarios: Usuario[] = [];
+  usuariosFiltrados: Usuario[] = [];
   nuevoComentario: string = '';
 
-  
+  ngOnInit() {
+
+    this.usuarios = this.usuarioService.getUsuarios();
+
+  }
 
   agregarComentario() {
-  if (this.nuevoComentario.trim() === '') return;
+
+  if (!this.nuevoComentario.trim()) {
+    return;
+  }
 
   this.oportunidad.comentarios.push({
+
     texto: this.nuevoComentario,
+
     fecha: new Date()
+
   });
 
-  this.oportunidadServices.getOportunidades().subscribe(oportunidades => {
+  this.oportunidad.fecha_actualizacion =
+    new Date();
 
-    const index = oportunidades.findIndex(
-      (o: Oportunidad) => o.titulo_oportunidad === this.oportunidad.titulo_oportunidad
-    );
-
-    if (index !== -1) {
-      oportunidades[index] = this.oportunidad;
-    }
-
-    localStorage.setItem('oportunidades', JSON.stringify(oportunidades));
-  });
+  this.oportunidadServices.actualizarOportunidad(
+    this.oportunidad
+  );
 
   this.nuevoComentario = '';
-  }
+
+}
 
   guardar() {
 
-  // actualizar fecha
-  this.oportunidad.fecha_actualizacion = new Date();
+  this.oportunidad.fecha_actualizacion =
+    new Date();
 
-  this.oportunidadServices.getOportunidades()
-    .pipe(take(1))
-    .subscribe(oportunidades => {
+  this.oportunidadServices.actualizarOportunidad(
+    this.oportunidad
+  );
 
-      const index = oportunidades.findIndex(
-        o => o.titulo_oportunidad === this.oportunidad.titulo_oportunidad
-      );
-
-      if (index !== -1) {
-        oportunidades[index] = this.oportunidad;
-      }
-
-      localStorage.setItem('oportunidades', JSON.stringify(oportunidades));
-    });
 }
 }

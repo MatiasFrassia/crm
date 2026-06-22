@@ -1,0 +1,37 @@
+<div class="selector">
+
+  <input
+    type="text"
+    placeholder="Buscar usuario..."
+    [(ngModel)]="textoBusqueda"
+    (input)="filtrar()"
+  >
+
+  @if(usuariosFiltrados.length > 0){
+
+    <div class="resultados">
+
+      @for(usuario of usuariosFiltrados;
+            track usuario.id_usuario){
+
+        <div
+          class="resultado"
+          (click)="seleccionar(usuario)"
+        >
+
+          {{usuario.nombre}}
+          {{usuario.apellido}}
+
+          <small>
+            {{usuario.email}}
+          </small>
+
+        </div>
+
+      }
+
+    </div>
+
+  }
+
+</div>

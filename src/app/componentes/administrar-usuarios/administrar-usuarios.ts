@@ -13,12 +13,10 @@ import { FiltrarUsuarioPipe } from '../../pipe/filtrar-usuario-pipe';
 })
 export class AdministrarUsuariosComponent implements OnInit {
 
-  usuarios: Usuario[] = [];
+  public usuarios: Usuario[] = [];
   public filtro: string = '';
-
-  modoEdicion = false;
-
-  usuarioSeleccionadoId = 0;
+  public modoEdicion = false;
+  public usuarioSeleccionadoId = 0;
 
   form = {
     nombre: '',

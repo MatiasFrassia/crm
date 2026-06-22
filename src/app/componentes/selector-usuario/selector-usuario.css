@@ -1,0 +1,22 @@
+.selector {
+  position: relative;
+}
+
+.resultados {
+  position: absolute;
+  width: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.resultado {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.resultado:hover {
+  background: #f3f3f3;
+}

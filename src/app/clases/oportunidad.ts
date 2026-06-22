@@ -3,7 +3,7 @@ import { Proveedor } from "./proveedor";
 import { Usuario } from "./usuario";
 
 export class Oportunidad {
-    public id_oportunidad:number = 0;
+    public id_oportunidad:number;
     public titulo_oportunidad:string;
     public usuario_asignado:Usuario;
     public fecha_inicio: Date;
@@ -26,6 +26,7 @@ export class Oportunidad {
     public comentarios: Comentario[] = [];
 
     constructor(
+        id_oportunidad:number,
         titulo_oportunidad: string,
         usuario_asignado: Usuario,
         fecha_inicio: Date,
@@ -46,7 +47,7 @@ export class Oportunidad {
         observaciones: string,
         
     ) {
-        
+        this.id_oportunidad = id_oportunidad;
         this.titulo_oportunidad = titulo_oportunidad;
         this.usuario_asignado = usuario_asignado;
         this.fecha_inicio = fecha_inicio;

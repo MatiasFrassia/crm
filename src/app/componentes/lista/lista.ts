@@ -19,9 +19,8 @@ import { LoginService } from '../../services/login-service';
 })
 export class Lista implements OnInit{
 
-  oportunidades$!: Observable<Oportunidad[]>;
-  
-  oportunidadSeleccionada: Oportunidad | null = null;
+  public oportunidades$!: Observable<Oportunidad[]>;
+  public oportunidadSeleccionada: Oportunidad | null = null;
   public filtro: string | undefined;
   
 
@@ -30,15 +29,15 @@ export class Lista implements OnInit{
   ){}
 
   ngOnInit(): void {
-    this.oportunidades$ = this.oportunidadServices.getOportunidades();
-    console.log(this.oportunidades$);
+    
+    
 
     const usuarioActual =
     this.loginService.getUsuarioActual();
 
-  if (!usuarioActual) {
-    return;
-  }
+    if (!usuarioActual) {
+      return;
+    }
 
   if (usuarioActual.isAdmin) {
 
@@ -70,7 +69,7 @@ export class Lista implements OnInit{
 
   abrirOportunidad(op: Oportunidad) {
     this.oportunidadSeleccionada = op;
-    console.log(this.oportunidadSeleccionada);
+    
   }
 
   cerrar() {

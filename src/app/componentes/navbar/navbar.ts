@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { LoginService } from '../../services/login-service';
 import { AsyncPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -10,7 +11,7 @@ import { Router, RouterLink } from '@angular/router';
   styleUrl: './navbar.css',
 })
 export class Navbar {
-  public isAdmin$: any;
+  public isAdmin$: Observable<boolean> | undefined;
   
 
   constructor(private loginService: LoginService, public router: Router) {}

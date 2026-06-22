@@ -8,6 +8,7 @@ import { CotizacionDolar } from '../cotizacion-dolar/cotizacion-dolar';
 import { LoginService } from '../../services/login-service';
 import { Usuario } from '../../clases/usuario';
 import { UsuarioService } from '../../services/usuario-service';
+import { SelectorUsuario } from "../selector-usuario/selector-usuario";
 
 @Component({
   selector: 'app-nueva-oportunidad',
@@ -16,6 +17,8 @@ import { UsuarioService } from '../../services/usuario-service';
   styleUrl: './nueva-oportunidad.css',
 })
 export class NuevaOportunidad {
+
+
   form: any = {
     titulo: '',
     usuario: '',
@@ -72,7 +75,7 @@ constructor(private oportunidadServices: OportunidadService,
 
     console.log(this.oportunidadServices);
     const nuevaOportunidad = new Oportunidad(
-       // id_oportunidad
+       0,
       this.form.titulo,
       usuarioAsignado,
       this.form.fechaInicio,
@@ -121,7 +124,13 @@ constructor(private oportunidadServices: OportunidadService,
     };
   }
 
-  //DOLAR HOY
+  seleccionarUsuario(usuario: Usuario) {
+
+    this.form.usuario = usuario;
+
+  }
+
+  
   
   
 }

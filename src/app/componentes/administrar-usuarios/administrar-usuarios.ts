@@ -2,17 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Usuario } from '../../clases/usuario';
 import { UsuarioService } from '../../services/usuario-service';
+import { FiltrarUsuarioPipe } from '../../pipe/filtrar-usuario-pipe';
 
 @Component({
   selector: 'app-administrar-usuarios',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, FiltrarUsuarioPipe],
   templateUrl: './administrar-usuarios.html',
   styleUrl: './administrar-usuarios.css'
 })
 export class AdministrarUsuariosComponent implements OnInit {
 
   usuarios: Usuario[] = [];
+  public filtro: string = '';
 
   modoEdicion = false;
 

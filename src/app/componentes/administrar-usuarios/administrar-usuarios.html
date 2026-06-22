@@ -72,6 +72,11 @@
   </form>
 
   <hr>
+    <input
+    type="text"
+    placeholder="Buscar usuario..."
+    [(ngModel)]="filtro"
+  />
 
   <table>
 
@@ -90,7 +95,7 @@
 
     <tbody>
 
-      @for(usuario of usuarios; track usuario.id_usuario){
+      @for(usuario of (usuarios | filtrarUsuario:filtro); track usuario.id_usuario){
 
         <tr>
 

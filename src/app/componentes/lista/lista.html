@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="card">
+    <h2>Mis Oportunidades</h2>
+
+    <div class="header">
+        <button routerLink="/nueva-oportunidad" class="btn-nuevo">+ Nueva</button>
+    </div>
+    <input type="text"  placeholder="Buscar oportunidades..." [(ngModel)]="filtro"/>
+    <div class="tabla-header">
+      <div>Título</div>
+      <div>Marca</div>
+      <div>Cliente</div>
+      <div>Proveedor/es</div>
+      <div>Última actualización</div>
+    </div>
+
+    <div class="tabla-body">
+      
+      @for(op of (((oportunidades$ | async) ?? []) | filtrarOportunidad:(filtro ?? ''));
+            track $index){
+      <div class="fila" (click)="abrirOportunidad(op)">
+        <div>{{ op.titulo_oportunidad }}</div>
+        <div>{{ op.marca }}</div>
+        <div>{{ op.cliente }}</div>
+        <div>{{ op.proveedor }}</div>
+        <div>{{ op.fecha_actualizacion | date:'dd/MM/yyyy HH:mm' }}</div>
+      </div>
+      }@empty{
+        <div> Sin oportunidades </div>
+      }
+    </div>
+    @if (oportunidadSeleccionada) {
+    <app-oportunidad-component
+      [oportunidad]="oportunidadSeleccionada"
+      (cerrar)="oportunidadSeleccionada = null">
+    </app-oportunidad-component>
+}
+
+  </div>
+</div>

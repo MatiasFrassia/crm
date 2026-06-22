@@ -1,0 +1,27 @@
+<div class="card">
+
+  <h3>Cotización del dólar</h3>
+
+   @if(dolarOficial){
+    
+    <div>
+      <strong>Oficial</strong><br>
+      Compra: ${{ dolarOficial.compra }}<br>
+      Venta: ${{ dolarOficial.venta }}
+    </div>
+
+  }
+
+  <hr>
+
+  @if(dolarBlue){
+
+    <div>
+      <strong>Blue</strong><br>
+      Compra: ${{ dolarBlue.compra }}<br>
+      Venta: ${{ dolarBlue.venta }}
+    </div>
+
+  }
+
+</div>

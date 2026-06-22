@@ -1,0 +1,27 @@
+.contenedor{
+  padding:20px;
+}
+
+form{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-width:400px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+
+th,
+td{
+  border:1px solid #ccc;
+  padding:8px;
+  text-align:left;
+}
+
+button{
+  margin-right:5px;
+}

@@ -1,0 +1,139 @@
+<div class="contenedor">
+
+  <h2>Administración de Usuarios</h2>
+
+  <form (ngSubmit)="guardarUsuario()">
+
+    <input
+      type="text"
+      placeholder="Nombre"
+      name="nombre"
+      [(ngModel)]="form.nombre"
+      required
+    >
+
+    <input
+      type="text"
+      placeholder="Apellido"
+      name="apellido"
+      [(ngModel)]="form.apellido"
+      required
+    >
+
+    <input
+      type="email"
+      placeholder="Email"
+      name="email"
+      [(ngModel)]="form.email"
+      required
+    >
+
+    <input
+      type="password"
+      placeholder="Contraseña"
+      name="password"
+      [(ngModel)]="form.password"
+      required
+    >
+
+    <label>
+
+      <input
+        type="checkbox"
+        name="isAdmin"
+        [(ngModel)]="form.isAdmin"
+      >
+
+      Administrador
+
+    </label>
+
+    <button type="submit">
+
+      @if(modoEdicion){
+        Guardar cambios
+      } @else {
+        Crear usuario
+      }
+
+    </button>
+
+    @if(modoEdicion){
+
+      <button
+        type="button"
+        (click)="cancelarEdicion()"
+      >
+        Cancelar
+      </button>
+
+    }
+
+  </form>
+
+  <hr>
+
+  <table>
+
+    <thead>
+
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Email</th>
+        <th>Administrador</th>
+        <th>Acciones</th>
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      @for(usuario of usuarios; track usuario.id_usuario){
+
+        <tr>
+
+          <td>{{usuario.id_usuario}}</td>
+
+          <td>{{usuario.nombre}}</td>
+
+          <td>{{usuario.apellido}}</td>
+
+          <td>{{usuario.email}}</td>
+
+          <td>
+
+            @if(usuario.isAdmin){
+              Sí
+            } @else {
+              No
+            }
+
+          </td>
+
+          <td>
+
+            <button
+              (click)="editar(usuario)"
+            >
+              Editar
+            </button>
+
+            <button
+              (click)="eliminar(usuario.id_usuario)"
+            >
+              Eliminar
+            </button>
+
+          </td>
+
+        </tr>
+
+      }
+
+    </tbody>
+
+  </table>
+
+</div>

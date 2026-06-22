@@ -1,0 +1,68 @@
+<div class="login-container">
+
+  <div class="logo">
+    <span class="icon"></span>
+    <span class="brand">Fapaz</span>
+  </div>
+
+  <div class="card">
+    <h2>Log In</h2>
+
+    
+    <form (ngSubmit)="login()">
+
+      <div class="form-group">
+        <label>EMAIL</label>
+        <input 
+          type="email" 
+          placeholder="Email"
+          [(ngModel)]="email"
+          name="email"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input 
+          type="password" 
+          placeholder="Contraseña"
+          [(ngModel)]="password"
+          name="password"
+          required
+        />
+      </div>
+
+      <div class="options">
+        <label>
+          <input type="checkbox" />
+          Recordarme
+        </label>
+        <a href="#">Olvide mi Contraseña</a>
+      </div>
+
+      
+      @if(error$ | async){
+        <div class="error">
+          Credenciales incorrectas
+        </div>
+      }
+
+      
+      <button type="submit" class="login-btn">
+        Ingresar
+      </button>
+
+    </form>
+
+  </div>
+
+  <div class="footer">
+    <span>T</span>
+    <span>|</span>
+    <span>G</span>
+    <span>|</span>
+    <span>H</span>
+  </div>
+
+</div>

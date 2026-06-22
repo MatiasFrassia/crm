@@ -1,0 +1,19 @@
+@if(router.url !== '/login'){
+
+
+<nav class="navbar">
+  <div class="logo">Fapaz</div>
+
+  <div class="menu">
+    <a routerLink="/lista">Oportunidades</a>
+    <a routerLink="/dashboard">Dashboard</a>
+    <a routerLink="/carteraClientes">Cartera de Clientes</a>
+    @if(isAdmin$ |async){
+      <a routerLink="/administrar-usuarios">Usuarios</a>
+    }
+  </div>
+
+  <button (click)="logout()">Cerrar sesión</button>
+</nav>
+
+}

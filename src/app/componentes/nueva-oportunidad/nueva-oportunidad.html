@@ -1,0 +1,134 @@
+<div class="background">
+  <div class="form-container">
+    <h2>Crear Oportunidad</h2>
+      <app-cotizacion-dolar></app-cotizacion-dolar>
+        <form class="form-grid" (ngSubmit)="guardar()">
+
+      <div class="form-group">
+        <label>Título</label>
+        <input type="text" name="titulo" [(ngModel)]="form.titulo">
+      </div>
+
+      @if(esAdmin){
+
+        <div class="form-group">
+
+          <label>Usuario Asignado</label>
+
+          <select
+            name="usuario"
+            [(ngModel)]="form.usuario">
+
+            <option value="">
+              Seleccione un usuario
+            </option>
+
+            @for(usuario of usuarios; track usuario.id_usuario){
+
+              <option [ngValue]="usuario">
+
+                {{usuario.nombre}}
+                {{usuario.apellido}}
+
+              </option>
+
+            }
+
+          </select>
+
+        </div>
+
+      }
+
+      <div class="form-group">
+        <label>Cliente</label>
+        <input type="text" name="cliente" [(ngModel)]="form.cliente">
+      </div>
+
+      <div class="form-group">
+        <label>Marca</label>
+        <input type="text" name="marca" [(ngModel)]="form.marca">
+      </div>
+
+      <div class="form-group">
+        <label>Producto</label>
+        <input type="text" name="producto" [(ngModel)]="form.producto">
+      </div>
+
+      <div class="form-group">
+        <label>Cantidad</label>
+        <input type="number" name="cantidad" [(ngModel)]="form.cantidad">
+      </div>
+
+      <div class="form-group">
+        <label>Proveedor</label>
+        <input type="text" name="proveedor" [(ngModel)]="form.proveedor">
+      </div>
+
+      <div class="form-group">
+        <label>Fecha Inicio</label>
+        <input type="date" name="fechaInicio" [(ngModel)]="form.fechaInicio">
+      </div>
+
+      <div class="form-group">
+        <label>Fecha Cierre Estimado</label>
+        <input type="date" name="fechaCierre" [(ngModel)]="form.fechaCierre">
+      </div>
+
+      <div class="form-group">
+        <label>Fecha Facturación</label>
+        <input type="date" name="fechaFacturacion" [(ngModel)]="form.fechaFacturacion">
+      </div>
+
+      <div class="form-group">
+        <label>Monto Estimado</label>
+        <input type="number" name="monto" [(ngModel)]="form.monto">
+      </div>
+
+      <div class="form-group">
+        <label>Costo</label>
+        <input type="number" name="costo" [(ngModel)]="form.costo">
+      </div>
+
+      <div class="form-group">
+        <label>Precio Venta</label>
+        <input type="number" name="precio" [(ngModel)]="form.precio">
+      </div>
+
+      <div class="form-group">
+        <label>Margen Ganancia</label>
+        <input type="number" name="margen" [(ngModel)]="form.margen">
+      </div>
+
+      <div class="form-group">
+        <label>Avance Proyecto</label>
+        <select name="avance" [(ngModel)]="form.avance">
+          <option value="Inicial">Inicial</option>
+          <option value="En progreso">En progreso</option>
+          <option value="Finalizado">Finalizado</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Plazo Pago Proveedor</label>
+        <input type="text" name="plazoProveedor" [(ngModel)]="form.plazoProveedor">
+      </div>
+
+      <div class="form-group">
+        <label>Plazo Pago Cliente</label>
+        <input type="text" name="plazoCliente" [(ngModel)]="form.plazoCliente">
+      </div>
+
+      <div class="form-group full-width">
+        <label>Observaciones</label>
+        <textarea name="observaciones" [(ngModel)]="form.observaciones"></textarea>
+      </div>
+
+      <div class="form-actions full-width">
+        <button type="submit">Guardar</button>
+        <button type="button" class="secondary" routerLink="/lista">Volver</button>
+      </div>
+
+    </form>
+  </div>
+</div>

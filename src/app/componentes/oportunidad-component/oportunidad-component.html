@@ -1,0 +1,148 @@
+<div class="overlay">
+  <div class="modal">
+
+    <!-- BOTÓN CERRAR -->
+    <button class="cerrar" (click)="cerrar.emit()">✕</button>
+
+    <!-- PANEL IZQUIERDO -->
+    <div class="detalle">
+
+      <div class="campo titulo">
+        <label>Título</label>
+        <input
+          type="text"
+          [(ngModel)]="oportunidad.titulo_oportunidad"
+        >
+      </div>
+
+      <div class="campo">
+        <label>Marca</label>
+        <input
+          type="text"
+          [(ngModel)]="oportunidad.marca"
+        >
+      </div>
+
+      <div class="campo">
+        <label>Producto</label>
+        <input
+          type="text"
+          [(ngModel)]="oportunidad.producto"
+        >
+      </div>
+
+      <div class="campo">
+        <label>Cantidad</label>
+        <input
+          type="number"
+          [(ngModel)]="oportunidad.cantidad"
+        >
+      </div>
+
+      <div class="campo">
+        <label>Cliente</label>
+        <input
+          type="text"
+          [(ngModel)]="oportunidad.cliente"
+        >
+      </div>
+
+      <div class="campo">
+        <label>Proveedor</label>
+        <input
+          type="text"
+          [(ngModel)]="oportunidad.proveedor"
+        >
+      </div>
+
+      <div class="campo">
+        <label>Precio de Venta</label>
+        <input
+          type="number"
+          [(ngModel)]="oportunidad.precio_venta"
+        >
+      </div>
+
+      <div class="campo">
+        <label>Costo Operación</label>
+        <input
+          type="number"
+          [(ngModel)]="oportunidad.operacion_costo"
+        >
+      </div>
+
+      <div class="campo">
+        <label>Margen de Ganancia</label>
+        <input
+          type="number"
+          [(ngModel)]="oportunidad.margen_ganancia"
+        >
+      </div>
+
+      <div class="campo">
+        <label>Estado</label>
+        <input
+          type="text"
+          [(ngModel)]="oportunidad.avance_proyecto"
+        >
+      </div>
+
+      <div class="campo">
+        <label>Observaciones</label>
+        <textarea
+          [(ngModel)]="oportunidad.observaciones">
+        </textarea>
+      </div>
+
+      <div class="fecha">
+        <strong>Última actualización:</strong>
+        {{ oportunidad.fecha_actualizacion | date:'dd/MM/yyyy HH:mm' }}
+      </div>
+
+      <button
+        class="guardar"
+        (click)="guardar()">
+        Guardar cambios
+      </button>
+
+    </div>
+
+    <!-- PANEL DERECHO -->
+    <div class="comentarios">
+
+      <h3>Historial</h3>
+
+      <div class="lista-comentarios">
+
+        @for (c of oportunidad.comentarios; track $index) {
+          <div class="comentario">
+            <p>{{ c.texto }}</p>
+            <small>
+              {{ c.fecha | date:'dd/MM/yyyy HH:mm' }}
+            </small>
+          </div>
+        } @empty {
+          <div class="comentario">
+            <p>Sin comentarios registrados</p>
+          </div>
+        }
+
+      </div>
+
+      <div class="nuevo">
+
+        <input
+          [(ngModel)]="nuevoComentario"
+          placeholder="Agregar comentario..."
+        >
+
+        <button (click)="agregarComentario()">
+          Agregar
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>

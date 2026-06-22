@@ -1,0 +1,109 @@
+/* Fondo con degradado */
+.background {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Contenedor */
+.form-container {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 1100px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* Título */
+.form-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Grid de 3 columnas */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+/* Inputs */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 13px;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: 0.3s;
+}
+
+/* Focus moderno */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #4facfe;
+  outline: none;
+  box-shadow: 0 0 5px rgba(79, 172, 254, 0.5);
+}
+
+/* Elementos que ocupan todo el ancho */
+.full-width {
+  grid-column: span 3;
+}
+
+/* Botones */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #4facfe;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #3a8be0;
+}
+
+button.secondary {
+  background: #ccc;
+  color: #333;
+}
+
+button.secondary:hover {
+  background: #aaa;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .full-width {
+    grid-column: span 1;
+  }
+}

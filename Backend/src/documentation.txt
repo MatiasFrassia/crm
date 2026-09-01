@@ -1,0 +1,8 @@
+Instalación de definiciones de tipos para Express:
+npm install --save-dev @types/express
+
+Ejecución del proyecto (modo desarrollo/scripts definidos):
+npm run dev 
+
+Ejecución de TypeScript para generar la carpeta de compilación:
+npm run typescript 

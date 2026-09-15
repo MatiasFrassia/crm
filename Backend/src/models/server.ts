@@ -2,6 +2,8 @@ import express, { type Application } from 'express';
 import sequelize from '../database/connection.js';
 import RUser from '../routes/user.js';
 import { User } from './user.js';
+import RProduct from '../routes/products.js';
+import { Product } from './products.js';
 
 
 class Server {
@@ -26,6 +28,7 @@ class Server {
 
     router(){
         this.app.use(RUser)
+        this.app.use(RProduct)
     }
 
     midlewares(){
@@ -35,6 +38,7 @@ class Server {
         // Database connection logic here
         try {
             await User.sync();
+            await Product.sync();
             console.log('Se creo la tabla');
             console.log('Database connected successfully');
         } catch (error) {

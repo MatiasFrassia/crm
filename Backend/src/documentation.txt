@@ -6,3 +6,9 @@ npm run dev
 
 Ejecución de TypeScript para generar la carpeta de compilación:
 npm run typescript 
+
+
+Instalar dependencias de TS:
+- npm i @types/express --save-dev
+- npm i --save-dev @types/bcrypt
+- npm i --save-dev @types/jsonwebtoken

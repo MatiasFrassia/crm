@@ -45,7 +45,7 @@ export const login = async (req: Request, res: Response) => {
    const token = jwt.sign({ 
         email: email,
         password: password
-        }, process.env.SECRET_KEY || 'R9P9FTQGpcER•••••••••••••••••••cRwWrMYlsrXl', { expiresIn: '1h' });
+        }, process.env.SECRET_KEY || 'R9P9FTQGpcER•••••••••••••••••••cRwWrMYlsrXl');
    console.log('User logged in:', user.name, user.lastName);
    res.json({token: token});
 

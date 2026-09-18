@@ -18,13 +18,13 @@ export class LoginService {
   constructor(private router: Router, private usuarioService: UsuarioService){
     if (typeof window !== 'undefined') {
 
-    const isAdmin =
-      localStorage.getItem('isAdmin') === 'true';
-      console.log('LOCALSTORAGE AUTH:', isAdmin);
+      const isAdmin =
+        localStorage.getItem('isAdmin') === 'true';
+        console.log('LOCALSTORAGE AUTH:', isAdmin);
 
-    this.isAdminSubject.next(isAdmin);
+      this.isAdminSubject.next(isAdmin);
 
-  }
+    }
   };
 
   getIsAdmin(): boolean {

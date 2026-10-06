@@ -2,17 +2,17 @@ import { DataTypes } from "sequelize";
 import sequelize from "../database/connection.js";
 
 export const User = sequelize.define(
-    'User', {
-  id: {
+    'usuario', {
+  id_usuario: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
-  name:{
+  nombre:{
     type: DataTypes.STRING,
     allowNull: false
   },
-  lastName:{
+  apellido:{
     type: DataTypes.STRING,
     allowNull: false
   },
@@ -25,8 +25,12 @@ export const User = sequelize.define(
     type: DataTypes.STRING,
     allowNull: false
   },
-  status: {
-    type: DataTypes.INTEGER,
+  isAdmin: {
+    type: DataTypes.BOOLEAN,
     allowNull: false
   }
-});
+},
+  {
+    tableName: 'usuarios', // <--- 2. Nombre exacto de tu tabla en MySQL
+    timestamps: false      // <--- 3. Desactiva la búsqueda de createdAt / updatedAt
+  });

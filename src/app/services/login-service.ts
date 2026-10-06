@@ -1,21 +1,30 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { BehaviorSubject, Observable } from 'rxjs';
 import { UsuarioService } from './usuario-service';
 import { Usuario } from '../clases/usuario';
+import { ToastrService } from 'ngx-toastr';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LoginService {
+
+  
+
   private isAdminSubject = new BehaviorSubject<boolean>(false);
   public isAdmin$ = this.isAdminSubject.asObservable();
   
   private errorSubject = new BehaviorSubject<boolean>(false);
   public error$ = this.errorSubject.asObservable();
+  
+  private toastr = inject(ToastrService);
 
-  constructor(private router: Router, private usuarioService: UsuarioService){
+  constructor(private router: Router,
+              private usuarioService: UsuarioService,
+              private http: HttpClient) {
     if (typeof window !== 'undefined') {
 
       const isAdmin =
@@ -73,6 +82,8 @@ export class LoginService {
     this.isAdminSubject.next(false);
 
     this.errorSubject.next(true);
+
+    this.toastr.error('Credenciales incorrectas', 'Error');
 
   }
 

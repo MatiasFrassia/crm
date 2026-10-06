@@ -4,6 +4,7 @@ import RUser from '../routes/user.js';
 import { User } from './user.js';
 import RProduct from '../routes/products.js';
 import { Product } from './products.js';
+import cors from 'cors';
 
 
 class Server {
@@ -14,10 +15,12 @@ class Server {
          
         this.app = express();
         this.port = process.env.PORT || '3016';   
-        this.listen();
         this.midlewares();
         this.router();
         this.DBconnect();
+        this.listen();
+        
+        
     }
 
     listen() {
@@ -33,6 +36,7 @@ class Server {
 
     midlewares(){
         this.app.use(express.json());
+        this.app.use(cors());
     }
     async DBconnect() {
         // Database connection logic here

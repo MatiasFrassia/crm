@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Usuario } from '../../clases/usuario';
 import { UsuarioService } from '../../services/usuario-service';
 import { FiltrarUsuarioPipe } from '../../pipe/filtrar-usuario-pipe';
+import {ToastrService} from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-administrar-usuarios',
@@ -18,6 +20,9 @@ export class AdministrarUsuariosComponent implements OnInit {
   public modoEdicion = false;
   public usuarioSeleccionadoId = 0;
 
+  private toastr = inject(ToastrService);
+
+  
   form = {
     nombre: '',
     apellido: '',
@@ -27,7 +32,8 @@ export class AdministrarUsuariosComponent implements OnInit {
   };
 
   constructor(
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -54,6 +60,7 @@ export class AdministrarUsuariosComponent implements OnInit {
       this.usuarioService.editarUsuario(
         usuarioEditado
       );
+      this.toastr.success('Usuario actualizado correctamente', 'Éxito');
 
     } else {
 
@@ -69,8 +76,24 @@ export class AdministrarUsuariosComponent implements OnInit {
       this.usuarioService.agregarUsuario(
         nuevoUsuario
       );
-
+      this.toastr.success('Usuario agregado correctamente', 'Éxito');
     }
+
+    const user : Usuario = new Usuario(
+      0,
+      this.form.nombre,
+      this.form.apellido,
+      this.form.email,
+      this.form.password,
+      this.form.isAdmin
+    );
+
+    console.log('Usuario a guardar:', user);
+
+    this.usuarioService.signIn(user).subscribe(data => {
+      this.toastr.success('Usuario registrado en la API correctamente', 'Éxito');
+    });
+    
 
     this.limpiarFormulario();
 
@@ -111,6 +134,7 @@ export class AdministrarUsuariosComponent implements OnInit {
       this.usuarioService.eliminarUsuario(id);
 
       this.cargarUsuarios();
+      
 
     }
   }
@@ -136,5 +160,7 @@ export class AdministrarUsuariosComponent implements OnInit {
     this.modoEdicion = false;
 
   }
+
+  
 
 }

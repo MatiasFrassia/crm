@@ -12,3 +12,9 @@ Instalar dependencias de TS:
 - npm i @types/express --save-dev
 - npm i --save-dev @types/bcrypt
 - npm i --save-dev @types/jsonwebtoken
+- npm i --save-dev @types/cors
+
+Frontend
+
+Instalacion de environments:
+- ng generate environments

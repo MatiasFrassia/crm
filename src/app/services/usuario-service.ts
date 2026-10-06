@@ -1,15 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Usuario } from '../clases/usuario';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsuarioService {
   private STORAGE_KEY = 'usuarios';
-  
+  private AppUrl: string
+  private APIURL: string // Cambia esto a la URL de tu API
 
-  constructor() {
-
+  constructor(private http: HttpClient) {
+    this.AppUrl = environment.apiUrl;
+    this.APIURL ='register/'; // Cambia esto a la URL de tu API
     // Si es la primera vez que corre el sistema
     // se crea un administrador por defecto
 
@@ -33,6 +37,11 @@ export class UsuarioService {
         JSON.stringify([admin])
       );
     }
+  }
+
+  //INICIO DE SESION
+  signIn(usuario: Usuario) {
+    return this.http.post(`${this.AppUrl}${this.APIURL}`, usuario);
   }
 
   /**

@@ -5,24 +5,26 @@ import jwt from 'jsonwebtoken';
 
 
 export const register = async (req: Request, res: Response) => {
-    const { name, lastName, email, password } = req.body;
+    const { nombre, apellido, email, password, isAdmin } = req.body;
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const userExists = await User.findOne({ where: { email } });
+    
+    
+    try{
+      const userExists = await User.findOne({ where: { email } });
     if (userExists) {
         return res.status(400).json({ message: 'User already exists' });
-    }
-    try{
-      User.create({
-        name: name,
-        lastName: lastName,
+      }
+      await User.create({
+        nombre: nombre,
+        apellido: apellido,
         email: email,
         password: passwordHash,
-        status: 1
+        isAdmin: isAdmin
      })
 
      res.json({
-        message: `User ${name} ${lastName} registered successfully`
+        message: `User ${nombre} ${apellido} registered successfully`
      });
     } catch(error){
         console.error('Error registering user:', error);
@@ -44,9 +46,10 @@ export const login = async (req: Request, res: Response) => {
 
    const token = jwt.sign({ 
         email: email,
-        password: password
+        password: password,
+         isAdmin: user.isAdmin
         }, process.env.SECRET_KEY || 'R9P9FTQGpcER•••••••••••••••••••cRwWrMYlsrXl');
-   console.log('User logged in:', user.name, user.lastName);
+   console.log('User logged in:', user.nombre, user.apellido);
    res.json({token: token});
 
     

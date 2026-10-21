@@ -6,24 +6,39 @@ export const User = sequelize.define(
   id_usuario: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    validate: {
+      notEmpty: true // Protege contra cadenas vacías ("")
+    }
   },
   nombre:{
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      notEmpty: true // Protege contra cadenas vacías ("")
+    }
   },
   apellido:{
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      notEmpty: true // Protege contra cadenas vacías ("")
+    }
   },
   email: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true
+    unique: true,
+    validate: {
+      notEmpty: true // Protege contra cadenas vacías ("")
+    }
   },
   password: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      notEmpty: true // Protege contra cadenas vacías ("")
+    }
   },
   isAdmin: {
     type: DataTypes.BOOLEAN,

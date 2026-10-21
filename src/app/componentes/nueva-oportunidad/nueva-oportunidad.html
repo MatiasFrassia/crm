@@ -1,131 +1,145 @@
 <div class="background">
   <div class="form-container">
     <h2>Crear Oportunidad</h2>
-      <app-cotizacion-dolar></app-cotizacion-dolar>
-        <form class="form-grid" (ngSubmit)="guardar()">
 
+    <app-cotizacion-dolar></app-cotizacion-dolar>
+
+    <form class="form-grid" (ngSubmit)="guardar()">
+
+      <!-- Título -->
       <div class="form-group">
-        <label>Título</label>
-        <input type="text" name="titulo" [(ngModel)]="form.titulo">
+        <label>Título *</label>
+        <input 
+          type="text" 
+          name="titulo" 
+          [(ngModel)]="form.titulo" 
+          placeholder="Ej: Venta de servidores Dell" 
+          required
+        >
       </div>
 
-      @if(esAdmin){
-
-        <div class="form-group">
-
+      <!-- Buscador de Usuario Asignado (Solo Admin) -->
+      @if (esAdmin) {
+        <div class="form-group selector-usuario-container">
           <label>Usuario Asignado</label>
+          <input 
+            type="text" 
+            name="filtroUsuario"
+            [(ngModel)]="filtroUsuario" 
+            (input)="onBuscarUsuario()" 
+            (focus)="mostrarListaUsuarios = true" 
+            (blur)="ocultarListaConDelay()"
+            placeholder="Escriba nombre o apellido..." 
+            autocomplete="off"
+          >
 
-          <select
-            name="usuario"
-            [(ngModel)]="form.usuario">
-
-            <option value="">
-              Seleccione un usuario
-            </option>
-
-            @for(usuario of usuarios; track usuario.id_usuario){
-
-              <option [ngValue]="usuario">
-
-                {{usuario.nombre}}
-                {{usuario.apellido}}
-
-              </option>
-
-            }
-
-          </select>
-
+          @if (mostrarListaUsuarios) {
+            <ul class="dropdown-usuarios">
+              @for (usuario of usuariosFiltrados; track usuario.id_usuario) {
+                <li (mousedown)="seleccionarUsuario(usuario)">
+                  {{ usuario.nombre }} {{ usuario.apellido }}
+                </li>
+              } @empty {
+                <li class="sin-resultados">No se encontraron usuarios</li>
+              }
+            </ul>
+          }
         </div>
-
       }
 
+      <!-- Cliente -->
       <div class="form-group">
-        <label>Cliente</label>
-        <input type="text" name="cliente" [(ngModel)]="form.cliente">
+        <label>Cliente *</label>
+        <input 
+          type="text" 
+          name="cliente" 
+          [(ngModel)]="form.cliente" 
+          placeholder="Ej: Cresata" 
+          required
+        >
       </div>
 
+      <!-- Marca -->
       <div class="form-group">
         <label>Marca</label>
-        <input type="text" name="marca" [(ngModel)]="form.marca">
+        <input 
+          type="text" 
+          name="marca" 
+          [(ngModel)]="form.marca" 
+          placeholder="Ej: Dell / Lenovo"
+        >
       </div>
 
+      <!-- Producto -->
       <div class="form-group">
         <label>Producto</label>
-        <input type="text" name="producto" [(ngModel)]="form.producto">
+        <input 
+          type="text" 
+          name="producto" 
+          [(ngModel)]="form.producto" 
+          placeholder="Ej: Servidor PowerEdge"
+        >
       </div>
 
-      <div class="form-group">
-        <label>Cantidad</label>
-        <input type="number" name="cantidad" [(ngModel)]="form.cantidad">
-      </div>
-
-      <div class="form-group">
-        <label>Proveedor</label>
-        <input type="text" name="proveedor" [(ngModel)]="form.proveedor">
-      </div>
-
-      <div class="form-group">
-        <label>Fecha Inicio</label>
-        <input type="date" name="fechaInicio" [(ngModel)]="form.fechaInicio">
-      </div>
-
+      <!-- Fecha Cierre Estimado -->
       <div class="form-group">
         <label>Fecha Cierre Estimado</label>
-        <input type="date" name="fechaCierre" [(ngModel)]="form.fechaCierre">
+        <input 
+          type="date" 
+          name="fechaCierreEstimado" 
+          [(ngModel)]="form.fechaCierreEstimado"
+        >
       </div>
 
+      <!-- Monto Estimado -->
       <div class="form-group">
-        <label>Fecha Facturación</label>
-        <input type="date" name="fechaFacturacion" [(ngModel)]="form.fechaFacturacion">
+        <label>Monto Estimado ($)</label>
+        <input 
+          type="number" 
+          name="monto" 
+          [(ngModel)]="form.monto" 
+          placeholder="0.00"
+        >
       </div>
 
-      <div class="form-group">
-        <label>Monto Estimado</label>
-        <input type="number" name="monto" [(ngModel)]="form.monto">
-      </div>
-
-      <div class="form-group">
-        <label>Costo</label>
-        <input type="number" name="costo" [(ngModel)]="form.costo">
-      </div>
-
-      <div class="form-group">
-        <label>Precio Venta</label>
-        <input type="number" name="precio" [(ngModel)]="form.precio">
-      </div>
-
-      <div class="form-group">
-        <label>Margen Ganancia</label>
-        <input type="number" name="margen" [(ngModel)]="form.margen">
-      </div>
-
-      <div class="form-group">
-        <label>Avance Proyecto</label>
-        <select name="avance" [(ngModel)]="form.avance">
-          <option value="Inicial">Inicial</option>
-          <option value="En progreso">En progreso</option>
-          <option value="Finalizado">Finalizado</option>
-        </select>
-      </div>
-
+      <!-- Plazo Pago Proveedor -->
       <div class="form-group">
         <label>Plazo Pago Proveedor</label>
-        <input type="text" name="plazoProveedor" [(ngModel)]="form.plazoProveedor">
+        <input 
+          type="text" 
+          name="plazoProveedor" 
+          [(ngModel)]="form.plazoProveedor" 
+          placeholder="Ej: 30 días"
+        >
       </div>
 
+      <!-- Plazo Pago Cliente -->
       <div class="form-group">
         <label>Plazo Pago Cliente</label>
-        <input type="text" name="plazoCliente" [(ngModel)]="form.plazoCliente">
+        <input 
+          type="text" 
+          name="plazoCliente" 
+          [(ngModel)]="form.plazoCliente" 
+          placeholder="Ej: Contrado / 15 días"
+        >
       </div>
 
+      <!-- Observaciones -->
       <div class="form-group full-width">
-        <label>Observaciones</label>
-        <textarea name="observaciones" [(ngModel)]="form.observaciones"></textarea>
+        <label>Observaciones Iniciales</label>
+        <textarea 
+          name="observaciones" 
+          [(ngModel)]="form.observaciones" 
+          rows="3" 
+          placeholder="Detalles del requerimiento inicial..."
+        ></textarea>
       </div>
 
+      <!-- Botones -->
       <div class="form-actions full-width">
-        <button type="submit">Guardar</button>
+        <button type="submit" [disabled]="loading">
+          {{ loading ? 'Guardando...' : 'Guardar' }}
+        </button>
         <button type="button" class="secondary" routerLink="/lista">Volver</button>
       </div>
 

@@ -4,11 +4,17 @@ import { NotFound } from './componentes/not-found/not-found';
 import { Lista } from './componentes/lista/lista';
 import { LoginComponent } from './componentes/login-component/login-component';
 import { AdministrarUsuariosComponent } from './componentes/administrar-usuarios/administrar-usuarios';
+import { guardGuard } from './utils/guard-guard'; // 👈 Cambiado a adminGuard
 
 export const routes: Routes = [
-    {path: 'nueva-oportunidad', component: NuevaOportunidad},
-    {path: 'lista', component: Lista},
-    {path: 'login', component: LoginComponent},
-    {path: 'administrar-usuarios', component: AdministrarUsuariosComponent},
-    {path:'', component: NotFound}
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { path: 'lista', component: Lista },
+  { path: 'nueva-oportunidad', component: NuevaOportunidad },
+  { 
+    path: 'administrar-usuarios', 
+    component: AdministrarUsuariosComponent, 
+    canActivate: [guardGuard] // 👈 Usamos guardGuard
+  },
+  { path: '**', component: NotFound }
 ];

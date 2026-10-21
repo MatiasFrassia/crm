@@ -1,32 +1,39 @@
-import { Component } from '@angular/core';
-import { LoginService } from '../../services/login-service';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Observable, take } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
-import { RouterLink } from "@angular/router";
+import { ToastrService } from 'ngx-toastr';
+import { LoginService } from '../../services/login-service'; // 👈 Importamos LoginService
 
 @Component({
   selector: 'app-login-component',
-  imports: [FormsModule, AsyncPipe],
+  standalone: true,
+  imports: [FormsModule],
   templateUrl: './login-component.html',
   styleUrl: './login-component.css',
 })
 export class LoginComponent {
-  email!: string;
-  password!: string;
-  error$!: Observable<boolean>;
-  router: any;
+  email = '';
+  password = '';
+  loading = false;
 
-  constructor(private loginService: LoginService) {}
+  private loginService = inject(LoginService); // 👈 Inyectamos LoginService
+  private toastr = inject(ToastrService);
 
-ngOnInit() {
-  this.error$ = this.loginService.getError();
-}
+  logIn(): void {
+    if (!this.email?.trim() || !this.password?.trim()) {
+      this.toastr.warning('Por favor complete todos los campos requeridos', 'Campos vacíos');
+      return;
+    }
 
+    this.loading = true;
 
-  login() {
-    this.loginService.login(this.email, this.password);
-
-   
+    // 🟢 Invocamos LoginService para que ejecute todo el flujo de sesión reactivo
+    this.loginService.login(this.email, this.password).subscribe({
+      next: () => {
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      }
+    });
   }
 }

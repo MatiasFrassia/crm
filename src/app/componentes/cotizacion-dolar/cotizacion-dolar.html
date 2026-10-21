@@ -1,27 +1,18 @@
-<div class="card">
-
-  <h3>Cotización del dólar</h3>
-
-   @if(dolarOficial){
-    
-    <div>
-      <strong>Oficial</strong><br>
-      Compra: ${{ dolarOficial.compra }}<br>
-      Venta: ${{ dolarOficial.venta }}
+<div class="cotizacion-container">
+  @if (loading) {
+    <p class="cotizacion-info">Cargando cotización del dólar...</p>
+  } @else if (error) {
+    <p class="cotizacion-error">No se pudo cargar la cotización</p>
+  } @else if (cotizacion) {
+    <div class="cotizaciones-grid">
+      <div class="cotizacion-item">
+        <strong>Dólar Oficial:</strong> 
+        Compra ${{ cotizacion.oficial.compra }} | Venta ${{ cotizacion.oficial.venta }}
+      </div>
+      <div class="cotizacion-item">
+        <strong>Dólar Blue:</strong> 
+        Compra ${{ cotizacion.blue.compra }} | Venta ${{ cotizacion.blue.venta }}
+      </div>
     </div>
-
   }
-
-  <hr>
-
-  @if(dolarBlue){
-
-    <div>
-      <strong>Blue</strong><br>
-      Compra: ${{ dolarBlue.compra }}<br>
-      Venta: ${{ dolarBlue.venta }}
-    </div>
-
-  }
-
 </div>

@@ -61,6 +61,63 @@
   box-shadow: 0 0 5px rgba(79, 172, 254, 0.5);
 }
 
+/* =========================================================
+   NUEVO: Buscador flotante de Usuario Asignado
+   ========================================================= */
+
+/* Contenedor ancla para posicionar la lista sin romper la grilla */
+.selector-usuario-container {
+  position: relative;
+}
+
+/* Lista flotante de sugerencias */
+.dropdown-usuarios {
+  position: absolute;
+  top: 100%; /* Se ubica justo debajo del input */
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 1000; /* Flota sobre los demás inputs de la grilla */
+  list-style: none; /* Elimina los puntos o viñetas */
+  margin: 5px 0 0 0;
+  padding: 0;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Ítems de la lista */
+.dropdown-usuarios li {
+  padding: 10px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s, color 0.2s;
+}
+
+.dropdown-usuarios li:last-child {
+  border-bottom: none;
+}
+
+/* Estado al pasar el mouse por un usuario */
+.dropdown-usuarios li:hover {
+  background: #eef6ff;
+  color: #4facfe;
+  font-weight: 600;
+}
+
+/* Mensaje cuando no hay coincidencias */
+.dropdown-usuarios .sin-resultados {
+  color: #888;
+  text-align: center;
+  cursor: default;
+}
+
+/* ========================================================= */
+
 /* Elementos que ocupan todo el ancho */
 .full-width {
   grid-column: span 3;

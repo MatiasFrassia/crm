@@ -1,136 +1,149 @@
-import { Component } from '@angular/core';
-import { Oportunidad, avanceProyecto } from '../../clases/oportunidad';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { OportunidadService } from '../../services/oportunidad';
-import { CommonModule, DatePipe } from '@angular/common';
-import { RouterLink } from "@angular/router";
-import { CotizacionDolar } from '../cotizacion-dolar/cotizacion-dolar';
-import { LoginService } from '../../services/login-service';
+import { Router, RouterLink } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+
 import { Usuario } from '../../clases/usuario';
+import { OportunidadService } from '../../services/oportunidad';
+import { LoginService } from '../../services/login-service';
 import { UsuarioService } from '../../services/usuario-service';
-import { SelectorUsuario } from "../selector-usuario/selector-usuario";
+import { CotizacionDolar } from '../cotizacion-dolar/cotizacion-dolar';
 
 @Component({
   selector: 'app-nueva-oportunidad',
-  imports: [FormsModule, RouterLink, CommonModule, CotizacionDolar],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    CotizacionDolar
+  ],
   templateUrl: './nueva-oportunidad.html',
   styleUrl: './nueva-oportunidad.css',
 })
-export class NuevaOportunidad {
+export class NuevaOportunidad implements OnInit {
 
+  public esAdmin = false;
+  public usuarios: Usuario[] = [];
+  public usuariosFiltrados: Usuario[] = [];
+  public filtroUsuario: string = '';
+  public mostrarListaUsuarios = false;
+  public loading = false;
 
   form: any = {
     titulo: '',
-    usuario: '',
+    usuario: null,
     cliente: '',
     marca: '',
     producto: '',
-    cantidad: null,
-    proveedor:'',
-    fechaInicio: '',
-    fechaCierre: '',
-    fechaFacturacion: '',
+    fechaCierreEstimado: '',
     monto: null,
-    costo: null,
-    precio: null,
-    margen: null,
-    avance: 'Inicial',
     plazoProveedor: '',
     plazoCliente: '',
     observaciones: ''
   };
-  public esAdmin: boolean = false;
-  public usuarios: Usuario[] = [];
-  
 
-constructor(private oportunidadServices: OportunidadService,
-   private loginService: LoginService,
-  private usuarioService: UsuarioService){}
+  private toastr = inject(ToastrService);
+  private router = inject(Router);
+  private oportunidadService = inject(OportunidadService);
+  private loginService = inject(LoginService);
+  private usuarioService = inject(UsuarioService);
 
-  ngOnInit() {
-
-  const usuario =
-    this.loginService.getUsuarioActual();
-
-  this.esAdmin =
-    usuario?.isAdmin ?? false;
-
-  this.usuarios =
-    this.usuarioService.getUsuarios();
-
-}
-  
-
-  guardar() {
-    const usuarioActual = this.loginService.getUsuarioActual();
-    let usuarioAsignado;
+  ngOnInit(): void {
+    this.esAdmin = this.loginService.getIsAdmin();
 
     if (this.esAdmin) {
+      this.cargarUsuarios();
+    }
+  }
 
-      usuarioAsignado = this.form.usuario;
+  cargarUsuarios(): void {
+    this.usuarioService.getAllUsuarios().subscribe({
+      next: (data: Usuario[]) => {
+        this.usuarios = data;
+        this.usuariosFiltrados = data;
+      },
+      error: (err) => {
+        console.error('Error al obtener usuarios:', err);
+        this.toastr.error('No se pudieron cargar los usuarios de la base de datos', 'Error');
+      }
+    });
+  }
 
+  onBuscarUsuario(): void {
+    const texto = this.filtroUsuario.toLowerCase().trim();
+    if (!texto) {
+      this.usuariosFiltrados = this.usuarios;
     } else {
-      usuarioAsignado = usuarioActual;
+      this.usuariosFiltrados = this.usuarios.filter(u => {
+        const nombre = (u.nombre || '').toLowerCase();
+        const apellido = (u.apellido || '').toLowerCase();
+        return nombre.includes(texto) || apellido.includes(texto);
+      });
+    }
+    this.mostrarListaUsuarios = true;
+  }
+
+  seleccionarUsuario(usuario: Usuario): void {
+    this.form.usuario = usuario;
+    this.filtroUsuario = `${usuario.nombre} ${usuario.apellido}`;
+    this.mostrarListaUsuarios = false;
+  }
+
+  ocultarListaConDelay(): void {
+    setTimeout(() => {
+      this.mostrarListaUsuarios = false;
+    }, 200);
+  }
+
+  guardar(): void {
+    if (!this.form.titulo?.trim() || !this.form.cliente?.trim()) {
+      this.toastr.warning('Por favor complete los campos requeridos (Título y Cliente)', 'Campos vacíos');
+      return;
     }
 
-    console.log(this.oportunidadServices);
-    const nuevaOportunidad = new Oportunidad(
-       0,
-      this.form.titulo,
-      usuarioAsignado,
-      this.form.fechaInicio,
-      this.form.fechaCierre,
-      this.form.fechaFacturacion,
-      this.form.marca,
-      this.form.producto,
-      this.form.cantidad,
-      this.form.cliente,
-      this.form.proveedor,
-      this.form.monto,
-      this.form.costo,
-      this.form.precio,
-      this.form.margen,
-      this.form.avance,
-      this.form.plazoProveedor,
-      this.form.plazoCliente,
-      this.form.observaciones
-        
-    );
-    console.log(nuevaOportunidad);
+    const usuarioActual = this.loginService.getUsuarioActual();
 
-    // ✅ guardar en el service
-    this.oportunidadServices.agregarOportunidades(nuevaOportunidad);
+    let idUsuarioAsignado: number | undefined;
+    if (this.esAdmin && this.form.usuario) {
+      idUsuarioAsignado = this.form.usuario.id_usuario || this.form.usuario.id;
+    } else if (usuarioActual) {
+      idUsuarioAsignado = (usuarioActual as any).id_usuario || (usuarioActual as any).id;
+    }
 
-    console.log("Oportunidad guardada:", nuevaOportunidad);
-    // 🔄 limpiar formulario
-    this.form = {
-      titulo: '',
-      usuario: '',
-      cliente: '',
-      marca: '',
-      producto: '',
-      cantidad: null,
-      fechaInicio: '',
-      fechaCierre: '',
-      fechaFacturacion: '',
-      monto: null,
-      costo: null,
-      precio: null,
-      margen: null,
-      avance: 'Inicial',
-      plazoProveedor: '',
-      plazoCliente: '',
-      observaciones: ''
+    if (!idUsuarioAsignado) {
+      this.toastr.error('Debe seleccionar un usuario asignado válido', 'Atención');
+      return;
+    }
+
+    const nuevaOportunidadData = {
+      titulo_oportunidad: this.form.titulo.trim(),
+      id_usuario_asignado: idUsuarioAsignado,
+      cliente: this.form.cliente.trim(),
+      marca: this.form.marca ? this.form.marca.trim() : null,
+      producto: this.form.producto ? this.form.producto.trim() : null,
+      fecha_cierre_estimado: this.form.fechaCierreEstimado || null,
+      operacion_monto_estimado: this.form.monto || null,
+      plazo_pago_proveedor: this.form.plazoProveedor ? this.form.plazoProveedor.trim() : null,
+      plazo_pago_cliente: this.form.plazoCliente ? this.form.plazoCliente.trim() : null,
+      observaciones: this.form.observaciones ? this.form.observaciones.trim() : null
     };
+
+    this.loading = true;
+
+    this.oportunidadService.crearOportunidad(nuevaOportunidadData).subscribe({
+      next: (res: any) => {
+        this.loading = false;
+        const idGenerado = res?.id_oportunidad || res?.id;
+        this.toastr.success(`Oportunidad #${idGenerado} creada con éxito`, '¡Creada!');
+        this.router.navigate(['/lista']);
+      },
+      error: (e) => {
+        this.loading = false;
+        console.error('Error al guardar:', e);
+        this.toastr.error('Error al guardar la oportunidad en la base de datos', 'Error');
+      }
+    });
   }
-
-  seleccionarUsuario(usuario: Usuario) {
-
-    this.form.usuario = usuario;
-
-  }
-
-  
-  
-  
 }

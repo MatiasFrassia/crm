@@ -1,35 +1,27 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class Dolar {
-  private apiUrl =
-    'https://dolarapi.com/v1/dolares/oficial';
-
-  constructor(private http: HttpClient) {}
-  
-  obtenerDolarOficial(): Observable<Dolar> {
-    return this.http.get<Dolar>(
-      'https://dolarapi.com/v1/dolares/oficial'
-    );
-  }
-
-  obtenerDolarBlue(): Observable<Dolar> {
-    return this.http.get<Dolar>(
-      'https://dolarapi.com/v1/dolares/blue'
-    );
-  }
-  
+export interface CotizacionDolarResponse {
+  oficial: { compra: number; venta: number };
+  blue: { compra: number; venta: number };
 }
 
-export interface Dolar {
-  moneda: string;
-  casa: string;
-  nombre: string;
-  compra: number;
-  venta: number;
-  fechaActualizacion: string;
+@Injectable({
+  providedIn: 'root'
+})
+export class DolarService {
+  private http = inject(HttpClient);
+
+  private AppUrl: string = environment.apiUrl.endsWith('/')
+    ? environment.apiUrl.slice(0, -1)
+    : environment.apiUrl;
+
+  /**
+   * Obtiene las cotizaciones del dólar desde nuestro backend Node.js
+   */
+  getCotizaciones(): Observable<CotizacionDolarResponse> {
+    return this.http.get<CotizacionDolarResponse>(`${this.AppUrl}/dolarApi`);
+  }
 }

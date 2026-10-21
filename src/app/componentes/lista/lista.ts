@@ -1,78 +1,73 @@
-import { DatePipe } from '@angular/common';
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { DatePipe, CommonModule } from '@angular/common';
 import { RouterLink } from "@angular/router";
+import { FormsModule } from '@angular/forms';
+import { Observable, of } from 'rxjs';
+
 import { OportunidadService } from '../../services/oportunidad';
 import { Oportunidad } from '../../clases/oportunidad';
 import { OportunidadComponent } from '../oportunidad-component/oportunidad-component';
-import { map, Observable} from 'rxjs';
 import { FiltrarOportunidadPipe } from "../../pipe/filtrar-oportunidad-pipe";
-import { FormsModule } from '@angular/forms';
 import { LoginService } from '../../services/login-service';
-
 
 @Component({
   selector: 'app-lista',
-  imports: [DatePipe, CommonModule, RouterLink, OportunidadComponent, FiltrarOportunidadPipe, FormsModule],
+  standalone: true,
+  imports: [
+    DatePipe, 
+    CommonModule, 
+    RouterLink, 
+    OportunidadComponent, 
+    FiltrarOportunidadPipe, 
+    FormsModule
+  ],
   templateUrl: './lista.html',
   styleUrl: './lista.css',
 })
-export class Lista implements OnInit{
+export class Lista implements OnInit {
 
   public oportunidades$!: Observable<Oportunidad[]>;
-  public oportunidadSeleccionada: Oportunidad | null = null;
-  public filtro: string | undefined;
-  
+  public oportunidadSeleccionada: any | null = null;
+  public filtro: string = '';
+  public esAdmin: boolean = false;
 
-  constructor(public oportunidadServices: OportunidadService,
-              private loginService: LoginService
-  ){}
+  private oportunidadServices = inject(OportunidadService);
+  private loginService = inject(LoginService);
 
   ngOnInit(): void {
-    
-    
+    this.cargarOportunidades();
+  }
 
-    const usuarioActual =
-    this.loginService.getUsuarioActual();
+  cargarOportunidades(): void {
+    const usuarioActual = this.loginService.getUsuarioActual();
+    this.esAdmin = this.loginService.getIsAdmin();
 
     if (!usuarioActual) {
+      this.oportunidades$ = of([]);
       return;
     }
 
-  if (usuarioActual.isAdmin) {
-
-    this.oportunidades$ =
-      this.oportunidadServices.getOportunidades();
-
-  } else {
-
-    this.oportunidades$ =
-      this.oportunidadServices
-        .getOportunidades()
-        .pipe(
-
-          map(oportunidades =>
-
-            oportunidades.filter(op =>
-
-              op.usuario_asignado.id_usuario ===
-              usuarioActual.id_usuario
-
-            )
-
-          )
-
-        );
-
-  }
+    if (this.esAdmin) {
+      // 👑 Administrador: Obtiene la totalidad de oportunidades desde la BD
+      this.oportunidades$ = this.oportunidadServices.getOportunidades();
+    } else {
+      // 👤 Usuario Estándar: Obtiene únicamente las oportunidades asignadas
+      const idUsuario = usuarioActual.id_usuario || usuarioActual.id;
+      
+      if (idUsuario) {
+        this.oportunidades$ = this.oportunidadServices.getOportunidadesPorUsuario(idUsuario);
+      } else {
+        this.oportunidades$ = of([]);
+      }
+    }
   }
 
-  abrirOportunidad(op: Oportunidad) {
+  abrirOportunidad(op: any): void {
     this.oportunidadSeleccionada = op;
-    
   }
 
-  cerrar() {
-  this.oportunidadSeleccionada = null;
+  cerrar(): void {
+    this.oportunidadSeleccionada = null;
+    this.cargarOportunidades(); // Refresca la lista tras cerrar el popup por si hubo ediciones
   }
 }

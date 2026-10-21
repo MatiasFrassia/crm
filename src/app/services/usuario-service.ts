@@ -1,161 +1,53 @@
-import { Injectable } from '@angular/core';
-import { Usuario } from '../clases/usuario';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Usuario } from '../clases/usuario';
 import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsuarioService {
-  private STORAGE_KEY = 'usuarios';
-  private AppUrl: string
-  private APIURL: string // Cambia esto a la URL de tu API
+  // Inyección moderna de HttpClient
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {
-    this.AppUrl = environment.apiUrl;
-    this.APIURL ='register/'; // Cambia esto a la URL de tu API
-    // Si es la primera vez que corre el sistema
-    // se crea un administrador por defecto
+  // Normalizamos la URL base para asegurar que nunca se generen barras dobles (//)
+  private AppUrl: string = environment.apiUrl.endsWith('/')
+    ? environment.apiUrl.slice(0, -1)
+    : environment.apiUrl;
 
-    const usuarios = localStorage.getItem(this.STORAGE_KEY);
-    
-
-    if (!usuarios) {
-      
-
-      const admin = new Usuario(
-        1,
-        'Administrador',
-        'Sistema',
-        'admin@admin.com',
-        '1234',
-        true
-      );
-
-      localStorage.setItem(
-        this.STORAGE_KEY,
-        JSON.stringify([admin])
-      );
-    }
-  }
-
-  //INICIO DE SESION
-  signIn(usuario: Usuario) {
-    return this.http.post(`${this.AppUrl}${this.APIURL}`, usuario);
+  /**
+   * Obtiene la lista completa de usuarios desde MySQL (Petición GET)
+   */
+  getAllUsuarios(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.AppUrl}/getAllUsuarios`);
   }
 
   /**
-   * Obtiene todos los usuarios
+   * Registra un nuevo usuario en la base de datos (Petición POST)
    */
-  getUsuarios(): Usuario[] {
-
-    const data = localStorage.getItem(this.STORAGE_KEY);
-
-    return data
-      ? JSON.parse(data)
-      : [];
-
+  signIn(usuario: Usuario): Observable<any> {
+    return this.http.post<any>(`${this.AppUrl}/register`, usuario);
   }
 
   /**
-   * Obtiene un usuario por ID
+   * Autentica credenciales y devuelve el token JWT (Petición POST)
    */
-  getUsuarioById(id: number): Usuario | undefined {
-
-    return this.getUsuarios().find(
-      usuario => usuario.id_usuario === id
-    );
-
+  logIn(usuario: { email: string; password: string }): Observable<any> {
+    return this.http.post<any>(`${this.AppUrl}/login`, usuario);
   }
 
   /**
-   * Obtiene un usuario por email
-   */
-  getUsuarioByEmail(email: string): Usuario | undefined {
-
-    return this.getUsuarios().find(
-      usuario => usuario.email === email
-    );
-
+ * Edita la información de un usuario existente en la base de datos (Petición PUT)
+ */
+  editarUsuarioAPI(id: number, usuario: Usuario): Observable<any> {
+    return this.http.put<any>(`${this.AppUrl}/updateUser/${id}`, usuario);
   }
 
   /**
-   * Genera el siguiente ID disponible
+   * Elimina un usuario por su ID de la base de datos (Petición DELETE)
    */
-  private generarNuevoId(): number {
-
-    const usuarios = this.getUsuarios();
-
-    if (usuarios.length === 0) {
-      return 1;
-    }
-
-    const maxId = Math.max(
-      ...usuarios.map(
-        usuario => usuario.id_usuario
-      )
-    );
-
-    return maxId + 1;
-  }
-
-  /**
-   * Agrega un usuario
-   */
-  agregarUsuario(usuario: Usuario): void {
-
-    const usuarios = this.getUsuarios();
-
-    usuario.id_usuario =
-      this.generarNuevoId();
-
-    usuarios.push(usuario);
-
-    localStorage.setItem(
-      this.STORAGE_KEY,
-      JSON.stringify(usuarios)
-    );
-
-  }
-
-  /**
-   * Edita un usuario
-   */
-  editarUsuario(usuarioEditado: Usuario): void {
-
-    const usuarios = this.getUsuarios();
-
-    const indice = usuarios.findIndex(
-      usuario =>
-        usuario.id_usuario === usuarioEditado.id_usuario
-    );
-
-    if (indice !== -1) {
-
-      usuarios[indice] = usuarioEditado;
-
-      localStorage.setItem(
-        this.STORAGE_KEY,
-        JSON.stringify(usuarios)
-      );
-    }
-  }
-
-  /**
-   * Elimina un usuario
-   */
-  eliminarUsuario(id: number): void {
-
-    const usuariosFiltrados =
-      this.getUsuarios().filter(
-        usuario =>
-          usuario.id_usuario !== id
-      );
-
-    localStorage.setItem(
-      this.STORAGE_KEY,
-      JSON.stringify(usuariosFiltrados)
-    );
-
+  eliminarUsuarioAPI(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.AppUrl}/deleteUser/${id}`);
   }
 }

@@ -1,113 +1,78 @@
-import { Injectable } from '@angular/core';
-import { Oportunidad, Comentario } from '../clases/oportunidad';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OportunidadService {
-  public oportunidades: Oportunidad[] = [];
-  public comentarios: Object[] = [];
-  //Se crea array de oportunidades
+  private http = inject(HttpClient);
 
-  
+  // Normalizamos la URL base de la API
+  private AppUrl: string = environment.apiUrl.endsWith('/')
+    ? environment.apiUrl.slice(0, -1)
+    : environment.apiUrl;
 
-  getOportunidades(): Observable<Oportunidad[]> {
-  return new Observable(observer => {
-
-    setTimeout(() => {
-      const data = localStorage.getItem('oportunidades');
-      this.oportunidades = data ? JSON.parse(data) : [];
-
-      observer.next(this.oportunidades);
-      observer.complete();
-    }, 3000); // ⏱️ 3 segundos de delay
-
-  });
-}
-
-  //Se muestra contenido de Array de oportunidades
-
-  agregarOportunidades(oportunidad: Oportunidad){
-     const data =
-    localStorage.getItem('oportunidades');
-
-  this.oportunidades =
-    data ? JSON.parse(data) : [];
-
-  oportunidad.id_oportunidad =
-    this.generarNuevoId();
-
-  this.oportunidades.push(oportunidad);
-
-  localStorage.setItem(
-    'oportunidades',
-    JSON.stringify(this.oportunidades)
-  );
-  }
-  //Agrega Oportunidades al Array
-  
-
-  //Genera un nuevo ID para cada oportunidad creada
-  private generarNuevoId(): number {
-
-  const data =
-    localStorage.getItem('oportunidades');
-
-  const oportunidades: Oportunidad[] =
-    data ? JSON.parse(data) : [];
-
-  if (oportunidades.length === 0) {
-    return 1;
+  /**
+   * Obtiene todas las oportunidades registradas en MySQL (Petición GET)
+   */
+  getOportunidades(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.AppUrl}/oportunidades`);
   }
 
-  const ultimoId = Math.max(
-    ...oportunidades.map(
-      o => o.id_oportunidad
-    )
-  );
+  /**
+   * Obtiene las oportunidades filtradas por el usuario asignado (Petición GET)
+   */
+  getOportunidadesPorUsuario(idUsuario: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.AppUrl}/oportunidades/usuario/${idUsuario}`);
+  }
 
-  return ultimoId + 1;
-}
+  /**
+   * Obtiene el detalle de una oportunidad específica por su ID (Petición GET)
+   */
+  getOportunidadPorId(id: number): Observable<any> {
+    return this.http.get<any>(`${this.AppUrl}/oportunidades/${id}`);
+  }
 
-actualizarOportunidad(oportunidadActualizada: Oportunidad) {
+  /**
+   * Registra una nueva oportunidad en MySQL (Petición POST)
+   * Devuelve el objeto creado incluyendo el id_oportunidad generado por autoincremento.
+   */
+  crearOportunidad(oportunidad: any): Observable<any> {
+    return this.http.post<any>(`${this.AppUrl}/oportunidades`, oportunidad);
+  }
 
-  const data =
-    localStorage.getItem('oportunidades');
+  /**
+   * Actualiza una oportunidad existente en la base de datos (Petición PUT)
+   */
+  actualizarOportunidad(id: number, oportunidad: any): Observable<any> {
+    return this.http.put<any>(`${this.AppUrl}/oportunidades/${id}`, oportunidad);
+  }
 
-  this.oportunidades =
-    data ? JSON.parse(data) : [];
+  /**
+   * Elimina una oportunidad por su ID (Petición DELETE)
+   */
+  eliminarOportunidad(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.AppUrl}/oportunidades/${id}`);
+  }
 
-  const index =
-    this.oportunidades.findIndex(
-      o =>
-        o.id_oportunidad ===
-        oportunidadActualizada.id_oportunidad
-    );
+  /**
+   * Agrega un comentario o actualización de chat/historial a la oportunidad (Petición POST)
+   */
+  agregarComentario(idOportunidad: number, texto: string, idUsuario: number, archivo?: File): Observable<any> {
+    const formData = new FormData();
+    
+    // 📄 Campos de texto primero
+    formData.append('id_usuario', idUsuario.toString());
+    formData.append('texto', texto || '');
 
-  if (index !== -1) {
+    // 📄 Archivo físico opcional al final
+    if (archivo) {
+      formData.append('archivo', archivo);
+    }
 
-    this.oportunidades[index] =
-      oportunidadActualizada;
-
-    localStorage.setItem(
-      'oportunidades',
-      JSON.stringify(this.oportunidades)
-    );
+    return this.http.post(`${this.AppUrl}/oportunidades/${idOportunidad}/comentarios`, formData);
   }
 }
-
-guardarCambios() {
-
-  localStorage.setItem(
-    'oportunidades',
-    JSON.stringify(this.oportunidades)
-  );
-
-}
-
-  
-
-}
-export { Oportunidad };
 

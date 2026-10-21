@@ -1,148 +1,206 @@
-<div class="overlay">
-  <div class="modal">
+@if (oportunidad) {
+  <div class="modal-overlay">
+    <div class="modal-container">
 
-    <!-- BOTÓN CERRAR -->
-    <button class="cerrar" (click)="cerrar.emit()">✕</button>
+      <!-- COLUMNA IZQUIERDA: INFORMACIÓN DE LA OPORTUNIDAD (65%) -->
+      <div class="columna-detalle">
+        
+        <div class="modal-titulo-seccion">
+          <h2>Oportunidad #{{ oportunidad.id_oportunidad || oportunidad.id }}</h2>
+        </div>
 
-    <!-- PANEL IZQUIERDO -->
-    <div class="detalle">
+        <app-cotizacion-dolar></app-cotizacion-dolar>
 
-      <div class="campo titulo">
-        <label>Título</label>
-        <input
-          type="text"
-          [(ngModel)]="oportunidad.titulo_oportunidad"
-        >
+        <form (ngSubmit)="guardar()" class="form-grid-modal">
+          
+          <div class="form-group full-width">
+            <label>Título de la Oportunidad</label>
+            <input 
+              type="text" 
+              name="titulo" 
+              [(ngModel)]="oportunidad.titulo_oportunidad" 
+              required
+            >
+          </div>
+
+          @if (esAdmin) {
+            <div class="form-group full-width">
+              <label>Usuario Asignado</label>
+              <select name="usuarioAsignado" [(ngModel)]="oportunidad.id_usuario_asignado">
+                @for (usr of usuarios; track usr.id_usuario) {
+                  <option [value]="usr.id_usuario">
+                    {{ usr.nombre }} {{ usr.apellido }}
+                  </option>
+                }
+              </select>
+            </div>
+          }
+
+          <div class="form-group">
+            <label>Cliente</label>
+            <input type="text" name="cliente" [(ngModel)]="oportunidad.cliente" required>
+          </div>
+
+          <div class="form-group">
+            <label>Marca</label>
+            <input type="text" name="marca" [(ngModel)]="oportunidad.marca">
+          </div>
+
+          <div class="form-group">
+            <label>Producto</label>
+            <input type="text" name="producto" [(ngModel)]="oportunidad.producto">
+          </div>
+
+          <div class="form-group">
+            <label>Fecha de Inicio (Registrada)</label>
+            <input 
+              type="date" 
+              name="fechaInicio" 
+              [ngModel]="oportunidad.fecha_inicio" 
+              disabled
+            >
+          </div>
+
+          <div class="form-group">
+            <label>Fecha Cierre Estimado</label>
+            <input 
+              type="date" 
+              name="fechaCierreEstimado" 
+              [(ngModel)]="oportunidad.fecha_cierre_estimado"
+            >
+          </div>
+
+          <div class="form-group">
+            <label>Monto Estimado ($)</label>
+            <input type="number" name="monto" [(ngModel)]="oportunidad.operacion_monto_estimado">
+          </div>
+
+          <div class="form-group">
+            <label>Precio de Venta ($)</label>
+            <input type="number" name="precioVenta" [(ngModel)]="oportunidad.precio_venta" placeholder="0.00">
+          </div>
+
+          <div class="form-group">
+            <label>Margen Ganancia (%)</label>
+            <input type="number" name="margen" [(ngModel)]="oportunidad.margen_ganancia" placeholder="Ej: 15">
+          </div>
+
+          <div class="form-group full-width">
+            <label>Avance del Proyecto</label>
+            <select name="avance" [(ngModel)]="oportunidad.avance_proyecto">
+              <option [value]="1">1% - Inicial</option>
+              <option [value]="30">30% - En progreso</option>
+              <option [value]="60">60% - Best case</option>
+              <option [value]="90">90% - Compromiso</option>
+              <option [value]="100">100% - Ganado</option>
+              <option [value]="0">0% - Oportunidad perdida</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Plazo Pago Proveedor</label>
+            <input type="text" name="plazoProveedor" [(ngModel)]="oportunidad.plazo_pago_proveedor">
+          </div>
+
+          <div class="form-group">
+            <label>Plazo Pago Cliente</label>
+            <input type="text" name="plazoCliente" [(ngModel)]="oportunidad.plazo_pago_cliente">
+          </div>
+
+          <div class="form-group full-width">
+            <label>Observaciones</label>
+            <textarea name="observaciones" [(ngModel)]="oportunidad.observaciones" rows="3"></textarea>
+          </div>
+
+          <div class="acciones-modal full-width">
+            <button type="submit" class="btn-guardar" [disabled]="loading">
+              {{ loading ? 'Guardando...' : 'Guardar Cambios' }}
+            </button>
+            <button type="button" class="btn-secundario" (click)="cerrarModal()">Volver</button>
+          </div>
+
+        </form>
       </div>
 
-      <div class="campo">
-        <label>Marca</label>
-        <input
-          type="text"
-          [(ngModel)]="oportunidad.marca"
-        >
-      </div>
+      <!-- COLUMNA DERECHA: CHAT CON SCROLL INDEPENDIENTE (35%) -->
+      <div class="columna-historial">
+        
+        <div class="historial-header">
+          <h3>Historial y Novedades</h3>
+          <button class="btn-cerrar" (click)="cerrarModal()" title="Cerrar ventana">&times;</button>
+        </div>
 
-      <div class="campo">
-        <label>Producto</label>
-        <input
-          type="text"
-          [(ngModel)]="oportunidad.producto"
-        >
-      </div>
+        <div class="historial-body" #historialBody>
+          @for (comentario of oportunidad.comentarios; track $index) {
+            <div class="comentario-card">
+              <div class="comentario-header">
+                <span class="comentario-autor">{{ obtenerNombreAutor(comentario) }}</span>
+                <span class="comentario-fecha">{{ comentario.createdAt | date:'short' }}</span>
+              </div>
+              
+              @if (comentario.texto) {
+                <p class="comentario-texto">{{ comentario.texto }}</p>
+              }
 
-      <div class="campo">
-        <label>Cantidad</label>
-        <input
-          type="number"
-          [(ngModel)]="oportunidad.cantidad"
-        >
-      </div>
+              <!-- Enlace directo para ver/descargar el archivo PDF subido -->
+              @if (comentario.archivo_adjunto) {
+                <div class="comentario-adjunto">
+                  📄 
+                  <a 
+                    [href]="getURLArchivo(comentario.archivo_adjunto)" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    class="link-pdf"
+                    title="Abrir cotización PDF"
+                  >
+                    Ver Cotización PDF
+                  </a>
+                </div>
+              }
+            </div>
+          } @empty {
+            <div class="comentario-vacio">
+              <p>Sin novedades o comentarios aún.<br>Escribe un mensaje o adjunta una cotización en PDF.</p>
+            </div>
+          }
+        </div>
 
-      <div class="campo">
-        <label>Cliente</label>
-        <input
-          type="text"
-          [(ngModel)]="oportunidad.cliente"
-        >
-      </div>
+        <div class="historial-footer">
+          
+          @if (archivoSeleccionado) {
+            <div class="archivo-seleccionado-preview">
+              <span>📄 {{ archivoSeleccionado.name }}</span>
+              <button type="button" (click)="quitarArchivo()">&times;</button>
+            </div>
+          }
 
-      <div class="campo">
-        <label>Proveedor</label>
-        <input
-          type="text"
-          [(ngModel)]="oportunidad.proveedor"
-        >
-      </div>
+          <div class="chat-input-wrapper">
+            <!-- Selección restringida a PDF e Imágenes -->
+            <input 
+              type="file" 
+              #fileInput 
+              accept="application/pdf,image/*"
+              style="display: none;" 
+              (change)="onArchivoSeleccionado($event)"
+            >
 
-      <div class="campo">
-        <label>Precio de Venta</label>
-        <input
-          type="number"
-          [(ngModel)]="oportunidad.precio_venta"
-        >
-      </div>
+            <button type="button" class="btn-adjuntar" (click)="fileInput.click()" title="Adjuntar cotización PDF">
+              📎
+            </button>
 
-      <div class="campo">
-        <label>Costo Operación</label>
-        <input
-          type="number"
-          [(ngModel)]="oportunidad.operacion_costo"
-        >
-      </div>
+            <input 
+              type="text" 
+              placeholder="Agregar comentario..." 
+              [(ngModel)]="nuevoComentario"
+              (keyup.enter)="agregarComentario()"
+            >
 
-      <div class="campo">
-        <label>Margen de Ganancia</label>
-        <input
-          type="number"
-          [(ngModel)]="oportunidad.margen_ganancia"
-        >
-      </div>
+            <button type="button" class="btn-agregar" (click)="agregarComentario()">Agregar</button>
+          </div>
+        </div>
 
-      <div class="campo">
-        <label>Estado</label>
-        <input
-          type="text"
-          [(ngModel)]="oportunidad.avance_proyecto"
-        >
       </div>
-
-      <div class="campo">
-        <label>Observaciones</label>
-        <textarea
-          [(ngModel)]="oportunidad.observaciones">
-        </textarea>
-      </div>
-
-      <div class="fecha">
-        <strong>Última actualización:</strong>
-        {{ oportunidad.fecha_actualizacion | date:'dd/MM/yyyy HH:mm' }}
-      </div>
-
-      <button
-        class="guardar"
-        (click)="guardar()">
-        Guardar cambios
-      </button>
 
     </div>
-
-    <!-- PANEL DERECHO -->
-    <div class="comentarios">
-
-      <h3>Historial</h3>
-
-      <div class="lista-comentarios">
-
-        @for (c of oportunidad.comentarios; track $index) {
-          <div class="comentario">
-            <p>{{ c.texto }}</p>
-            <small>
-              {{ c.fecha | date:'dd/MM/yyyy HH:mm' }}
-            </small>
-          </div>
-        } @empty {
-          <div class="comentario">
-            <p>Sin comentarios registrados</p>
-          </div>
-        }
-
-      </div>
-
-      <div class="nuevo">
-
-        <input
-          [(ngModel)]="nuevoComentario"
-          placeholder="Agregar comentario..."
-        >
-
-        <button (click)="agregarComentario()">
-          Agregar
-        </button>
-
-      </div>
-
-    </div>
-
   </div>
-</div>
+}

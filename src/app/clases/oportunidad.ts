@@ -1,5 +1,4 @@
 import { Cliente } from "./cliente";
-import { Proveedor } from "./proveedor";
 import { Usuario } from "./usuario";
 
 export class Oportunidad {
@@ -11,12 +10,8 @@ export class Oportunidad {
     public fecha_facturacion_estimado: Date;
     public marca:string;
     public producto:string;
-    public cantidad:number;
     public cliente: string;
-    public proveedor: string;
     public operacion_monto_estimado:number;
-    public operacion_costo:number;
-    public precio_venta:number;
     public margen_ganancia:number;
     public avance_proyecto:avanceProyecto;
     public plazo_pago_proveedor:string;
@@ -34,12 +29,8 @@ export class Oportunidad {
         fecha_facturacion_estimado: Date,
         marca: string,
         producto: string,
-        cantidad: number,
         cliente: string,
-        proveedor: string,
         operacion_monto_estimado: number,
-        operacion_costo: number,
-        precio_venta: number,
         margen_ganancia: number,
         avance_proyecto: avanceProyecto,
         plazo_pago_proveedor: string,
@@ -55,12 +46,8 @@ export class Oportunidad {
         this.fecha_facturacion_estimado = fecha_facturacion_estimado;
         this.marca = marca;
         this.producto = producto;
-        this.cantidad = cantidad;
         this.cliente = cliente;
-        this.proveedor = proveedor;
         this.operacion_monto_estimado = operacion_monto_estimado;
-        this.operacion_costo = operacion_costo;
-        this.precio_venta = precio_venta;
         this.margen_ganancia = margen_ganancia;
         this.avance_proyecto = avance_proyecto;
         this.plazo_pago_proveedor = plazo_pago_proveedor;

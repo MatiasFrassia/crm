@@ -30,11 +30,11 @@
 
     <input
       type="password"
-      placeholder="Contraseña"
+      placeholder="Contraseña (dejar en blanco si no cambia)"
       name="password"
       [(ngModel)]="form.password"
-      required
-    >
+      [required]="!modoEdicion"
+      >
 
     <label>
 
@@ -48,9 +48,11 @@
 
     </label>
 
-    <button type="submit">
+    <button type="submit" [disabled]="loading">
 
-      @if(modoEdicion){
+      @if (loading) {
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      } @else if (modoEdicion) {
         Guardar cambios
       } @else {
         Crear usuario
@@ -73,72 +75,44 @@
 
   <hr>
     <input
-    type="text"
-    placeholder="Buscar usuario..."
-    [(ngModel)]="filtro"
-  />
+      type="text"
+      placeholder="Buscar usuario por nombre, apellido, email o rol..."
+      [(ngModel)]="filtro"
+      class="form-control mb-3"
+    />
 
   <table>
-
-    <thead>
-
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Apellido</th>
+      <th>Email</th>
+      <th>Administrador</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (usuario of (usuarios | filtrarUsuario:filtro); track usuario.id_usuario) {
       <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Apellido</th>
-        <th>Email</th>
-        <th>Administrador</th>
-        <th>Acciones</th>
+        <td>{{ usuario.id_usuario }}</td>
+        <td>{{ usuario.nombre }}</td>
+        <td>{{ usuario.apellido }}</td>
+        <td>{{ usuario.email }}</td>
+        <td>{{ usuario.isAdmin ? 'Sí' : 'No' }}</td>
+        <td>
+          <button (click)="editar(usuario)">Editar</button>
+          <button (click)="eliminar(usuario.id_usuario)">Eliminar</button>
+        </td>
       </tr>
-
-    </thead>
-
-    <tbody>
-
-      @for(usuario of (usuarios | filtrarUsuario:filtro); track usuario.id_usuario){
-
-        <tr>
-
-          <td>{{usuario.id_usuario}}</td>
-
-          <td>{{usuario.nombre}}</td>
-
-          <td>{{usuario.apellido}}</td>
-
-          <td>{{usuario.email}}</td>
-
-          <td>
-
-            @if(usuario.isAdmin){
-              Sí
-            } @else {
-              No
-            }
-
-          </td>
-
-          <td>
-
-            <button
-              (click)="editar(usuario)"
-            >
-              Editar
-            </button>
-
-            <button
-              (click)="eliminar(usuario.id_usuario)"
-            >
-              Eliminar
-            </button>
-
-          </td>
-
-        </tr>
-
-      }
-
-    </tbody>
-
-  </table>
+    } @empty {
+      <tr>
+        <td colspan="6" style="text-align: center;">
+          No se encontraron usuarios que coincidan con la búsqueda.
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
 
 </div>

@@ -10,7 +10,6 @@ export class FiltrarOportunidadPipe implements PipeTransform {
       oportunidad.titulo_oportunidad.toLowerCase().includes(filtro.toLowerCase()) ||
       (oportunidad.producto??'').toLowerCase().includes(filtro.toLowerCase()) ||
       (oportunidad.cliente??'').toLowerCase().includes(filtro.toLowerCase()) ||
-      (oportunidad.proveedor??'').toLowerCase().includes(filtro.toLowerCase()) ||
       (oportunidad.marca??'').toLowerCase().includes(filtro.toLowerCase())
     );
   }

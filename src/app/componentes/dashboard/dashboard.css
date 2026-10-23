@@ -1,0 +1,42 @@
+.dashboard-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+h2 {
+  font-size: 1.8rem;
+  color: #1e293b;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 10px;
+}
+
+.graficos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+.chart-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.chart-card h3 {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #475569;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+/* Fundamental para que Chart.js funcione correctamente */
+.canvas-wrapper {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}

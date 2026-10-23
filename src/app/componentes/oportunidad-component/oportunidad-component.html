@@ -70,19 +70,40 @@
             >
           </div>
 
+          <!-- 👈 3. Modificados type a "text" e incorporado appInputMoneda -->
           <div class="form-group">
             <label>Monto Estimado ($)</label>
-            <input type="number" name="monto" [(ngModel)]="oportunidad.operacion_monto_estimado">
+            <input 
+              type="text" 
+              name="monto" 
+              [(ngModel)]="oportunidad.operacion_monto_estimado" 
+              appInputMoneda
+            >
           </div>
 
+          <!-- 👈 3. Modificados type a "text" e incorporado appInputMoneda -->
           <div class="form-group">
             <label>Precio de Venta ($)</label>
-            <input type="number" name="precioVenta" [(ngModel)]="oportunidad.precio_venta" placeholder="0.00">
+            <input 
+              type="text" 
+              name="precioVenta" 
+              [(ngModel)]="oportunidad.precio_venta" 
+              placeholder="0.00" 
+              appInputMoneda
+            >
           </div>
 
           <div class="form-group">
-            <label>Margen Ganancia (%)</label>
-            <input type="number" name="margen" [(ngModel)]="oportunidad.margen_ganancia" placeholder="Ej: 15">
+          <label>Margen Ganancia (%)</label>
+          <input 
+            type="number" 
+            name="margen" 
+            [(ngModel)]="oportunidad.margen_ganancia" 
+            placeholder="Ej: 15"
+            appCalculadoraMargen
+            [montoEstimado]="oportunidad.operacion_monto_estimado"
+            (precioCalculado)="oportunidad.precio_venta = $event"
+            >
           </div>
 
           <div class="form-group full-width">
@@ -122,7 +143,7 @@
         </form>
       </div>
 
-      <!-- COLUMNA DERECHA: CHAT CON SCROLL INDEPENDIENTE (35%) -->
+      <!-- COLUMNA DERECHA: CHAT EN TIEMPO REAL (FIREBASE) (35%) -->
       <div class="columna-historial">
         
         <div class="historial-header">
@@ -131,23 +152,25 @@
         </div>
 
         <div class="historial-body" #historialBody>
-          @for (comentario of oportunidad.comentarios; track $index) {
+          <!-- ⚡ Iteramos sobre el array de Firebase (mensajesChat) -->
+          @for (msj of mensajesChat; track $index) {
             <div class="comentario-card">
               <div class="comentario-header">
-                <span class="comentario-autor">{{ obtenerNombreAutor(comentario) }}</span>
-                <span class="comentario-fecha">{{ comentario.createdAt | date:'short' }}</span>
+                <!-- Se muestra el nombre del usuario guardado en Firestore -->
+                <span class="comentario-autor">{{ msj.usuario?.nombre }} {{ msj.usuario?.apellido }}</span>
+                <span class="comentario-fecha">{{ msj.createdAt | date:'short' }}</span>
               </div>
               
-              @if (comentario.texto) {
-                <p class="comentario-texto">{{ comentario.texto }}</p>
+              @if (msj.texto) {
+                <p class="comentario-texto">{{ msj.texto }}</p>
               }
 
-              <!-- Enlace directo para ver/descargar el archivo PDF subido -->
-              @if (comentario.archivo_adjunto) {
+              <!-- Enlace directo para ver/descargar el archivo PDF subido (desde Node.js) -->
+              @if (msj.archivo_adjunto) {
                 <div class="comentario-adjunto">
                   📄 
                   <a 
-                    [href]="getURLArchivo(comentario.archivo_adjunto)" 
+                    [href]="getURLArchivo(msj.archivo_adjunto)" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     class="link-pdf"
@@ -184,7 +207,7 @@
               (change)="onArchivoSeleccionado($event)"
             >
 
-            <button type="button" class="btn-adjuntar" (click)="fileInput.click()" title="Adjuntar cotización PDF">
+            <button type="button" class="btn-adjuntar" (click)="fileInput.click()" title="Adjuntar cotización PDF" [disabled]="loading">
               📎
             </button>
 
@@ -192,10 +215,14 @@
               type="text" 
               placeholder="Agregar comentario..." 
               [(ngModel)]="nuevoComentario"
-              (keyup.enter)="agregarComentario()"
+              (keyup.enter)="!loading && agregarComentario()"
+              [disabled]="loading"
             >
 
-            <button type="button" class="btn-agregar" (click)="agregarComentario()">Agregar</button>
+            <!-- ⚡ Botón vinculado al estado de carga -->
+            <button type="button" class="btn-agregar" (click)="agregarComentario()" [disabled]="loading">
+              {{ loading ? '...' : 'Agregar' }}
+            </button>
           </div>
         </div>
 

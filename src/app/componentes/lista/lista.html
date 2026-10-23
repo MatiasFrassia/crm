@@ -2,8 +2,10 @@
   <div class="card">
     <h2>{{ esAdmin ? 'Todas las Oportunidades' : 'Mis Oportunidades' }}</h2>
 
+    <!-- Contenedor de Botones Superior -->
     <div class="header">
       <button routerLink="/nueva-oportunidad" class="btn-nuevo">+ Nueva</button>
+      <button type="button" class="btn-exportar" (click)="exportarCSV()">📥 Exportar CSV</button>
     </div>
 
     <input type="text" placeholder="Buscar oportunidades..." [(ngModel)]="filtro" />

@@ -1,0 +1,49 @@
+<div class="dashboard-container">
+  <h2>Dashboard Analítico</h2>
+
+  @if (cargando) {
+    <p>Cargando métricas...</p>
+  } @else {
+    
+    <div class="graficos-grid">
+      <!-- Gráfico 1: Visible para TODOS -->
+      <div class="chart-card">
+        <h3>Estado de Oportunidades</h3>
+        <div class="canvas-wrapper">
+          <canvas baseChart
+            [data]="chartEstadoData"
+            [type]="chartEstadoType"
+            [options]="chartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <!-- Gráficos exclusivos para ADMINISTRADORES -->
+      @if (esAdmin) {
+        
+        <div class="chart-card">
+          <h3>Carga de Trabajo por Usuario</h3>
+          <div class="canvas-wrapper">
+            <canvas baseChart
+              [data]="chartUsuarioData"
+              [type]="chartUsuarioType"
+              [options]="chartOptions">
+            </canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3>Productos Más Solicitados</h3>
+          <div class="canvas-wrapper">
+            <canvas baseChart
+              [data]="chartProductoData"
+              [type]="chartProductoType"
+              [options]="chartOptions">
+            </canvas>
+          </div>
+        </div>
+
+      }
+    </div>
+  }
+</div>

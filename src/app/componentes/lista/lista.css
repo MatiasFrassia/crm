@@ -57,3 +57,32 @@
   background-color: #d9f0ff;
   transform: scale(1.01);
 }
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* 👈 Espacio entre los botones */
+  margin-bottom: 16px;
+}
+
+.btn-exportar {
+  background-color: #10b981; /* Color verde esmeralda */
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-exportar:hover {
+  background-color: #059669; /* Verde un poco más oscuro al pasar el ratón */
+}
+
+.btn-exportar:active {
+  transform: scale(0.97); /* Pequeño efecto de click */
+}

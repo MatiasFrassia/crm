@@ -18,3 +18,4 @@ Frontend
 
 Instalacion de environments:
 - ng generate environments
+- npm install firebase @angular/fire --legacy-peer-deps (conexion forzada de firebase)

@@ -91,14 +91,41 @@
         >
       </div>
 
-      <!-- Monto Estimado -->
+      <!-- Monto Estimado (Modificado para usar appInputMoneda) -->
       <div class="form-group">
         <label>Monto Estimado ($)</label>
         <input 
-          type="number" 
+          type="text" 
           name="monto" 
           [(ngModel)]="form.monto" 
           placeholder="0.00"
+          appInputMoneda
+        >
+      </div>
+
+      <!-- NUEVO: Margen Ganancia (Usa appCalculadoraMargen) -->
+      <div class="form-group">
+        <label>Margen Ganancia (%)</label>
+        <input 
+          type="number" 
+          name="margen" 
+          [(ngModel)]="form.margen_ganancia" 
+          placeholder="Ej: 10"
+          appCalculadoraMargen
+          [montoEstimado]="form.monto"
+          (precioCalculado)="form.precioVenta = $event"
+        >
+      </div>
+
+      <!-- NUEVO: Precio de Venta (Usa appInputMoneda) -->
+      <div class="form-group">
+        <label>Precio de Venta ($)</label>
+        <input 
+          type="text" 
+          name="precioVenta" 
+          [(ngModel)]="form.precioVenta" 
+          placeholder="0.00"
+          appInputMoneda
         >
       </div>
 

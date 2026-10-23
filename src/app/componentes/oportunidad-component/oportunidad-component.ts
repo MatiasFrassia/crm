@@ -5,6 +5,7 @@ import {
   EventEmitter, 
   OnInit, 
   AfterViewInit, 
+  OnDestroy,
   ViewChild, 
   ElementRef, 
   inject 
@@ -12,12 +13,16 @@ import {
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 
 import { Usuario } from '../../clases/usuario';
 import { OportunidadService } from '../../services/oportunidad';
 import { UsuarioService } from '../../services/usuario-service';
 import { LoginService } from '../../services/login-service';
 import { CotizacionDolar } from '../cotizacion-dolar/cotizacion-dolar';
+import { ChatService } from '../../services/chat-service';
+import { InputMonedaDirective } from '../../directivas/input-moneda'; // 👈 1. Importación agregada
+import { CalculadoraMargenDirective } from '../../directivas/calculadora-margen';
 
 @Component({
   selector: 'app-oportunidad-component',
@@ -26,12 +31,14 @@ import { CotizacionDolar } from '../cotizacion-dolar/cotizacion-dolar';
     CommonModule,
     DatePipe,
     FormsModule,
-    CotizacionDolar
+    CotizacionDolar,
+    InputMonedaDirective,
+    CalculadoraMargenDirective // 👈 2. Directiva registrada en los imports
   ],
   templateUrl: './oportunidad-component.html',
   styleUrl: './oportunidad-component.css',
 })
-export class OportunidadComponent implements OnInit, AfterViewInit {
+export class OportunidadComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() oportunidad: any;
   @Output() cerrar = new EventEmitter<void>();
@@ -44,10 +51,15 @@ export class OportunidadComponent implements OnInit, AfterViewInit {
   public archivoSeleccionado: File | null = null;
   public loading: boolean = false;
 
+  // ⚡ Variables de Firebase
+  public mensajesChat: any[] = []; 
+  private chatSub!: Subscription;
+
   private oportunidadServices = inject(OportunidadService);
   private usuarioService = inject(UsuarioService);
   private loginService = inject(LoginService);
   private toastr = inject(ToastrService);
+  private chatService = inject(ChatService);
 
   ngOnInit(): void {
     this.esAdmin = this.loginService.getIsAdmin();
@@ -62,10 +74,30 @@ export class OportunidadComponent implements OnInit, AfterViewInit {
     if (this.oportunidad && !this.oportunidad.comentarios) {
       this.oportunidad.comentarios = [];
     }
+
+    // ⚡ CONECTAR AL CHAT EN TIEMPO REAL CON FIREBASE
+    const idOportunidad = this.oportunidad?.id_oportunidad || this.oportunidad?.id;
+    if (idOportunidad) {
+      this.chatSub = this.chatService.obtenerMensajes(Number(idOportunidad)).subscribe({
+        next: (mensajes) => {
+          // Ordenamos los mensajes cronológicamente
+          this.mensajesChat = mensajes.sort((a, b) => a.createdAt - b.createdAt);
+          setTimeout(() => this.scrollToBottom(), 100);
+        },
+        error: (err) => console.error('Error escuchando chat:', err)
+      });
+    }
   }
 
   ngAfterViewInit(): void {
     setTimeout(() => this.scrollToBottom(), 100);
+  }
+
+  ngOnDestroy(): void {
+    // Seguridad adicional: desconectar si el componente se destruye
+    if (this.chatSub) {
+      this.chatSub.unsubscribe();
+    }
   }
 
   getURLArchivo(nombreArchivo: string): string {
@@ -75,19 +107,14 @@ export class OportunidadComponent implements OnInit, AfterViewInit {
 
   obtenerNombreAutor(comentario: any): string {
     if (!comentario) return 'Usuario';
-
     if (comentario.usuario && typeof comentario.usuario === 'object') {
       const nombre = comentario.usuario.nombre || '';
       const apellido = comentario.usuario.apellido || '';
-      if (nombre || apellido) {
-        return `${nombre} ${apellido}`.trim();
-      }
+      if (nombre || apellido) return `${nombre} ${apellido}`.trim();
     }
-
     if (typeof comentario.usuario === 'string' && comentario.usuario.trim()) {
       return comentario.usuario;
     }
-
     return 'Usuario';
   }
 
@@ -103,12 +130,15 @@ export class OportunidadComponent implements OnInit, AfterViewInit {
   }
 
   cerrarModal(): void {
+    // ⚡ Desconectar de Firebase para no consumir recursos en segundo plano
+    if (this.chatSub) {
+      this.chatSub.unsubscribe();
+    }
     this.cerrar.emit();
   }
 
   guardar(): void {
     if (!this.oportunidad) return;
-
     const idOportunidad = this.oportunidad.id_oportunidad || this.oportunidad.id;
 
     if (!idOportunidad) {
@@ -148,7 +178,7 @@ export class OportunidadComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Envía el comentario o la cotización PDF al servicio pasando los parámetros individuales
+   * Envía el comentario a MySQL y luego lo sincroniza a Firebase
    */
   agregarComentario(): void {
     if ((!this.nuevoComentario || !this.nuevoComentario.trim()) && !this.archivoSeleccionado) {
@@ -158,8 +188,6 @@ export class OportunidadComponent implements OnInit, AfterViewInit {
 
     const idOportunidad = Number(this.oportunidad?.id_oportunidad || this.oportunidad?.id);
     const usuarioActual = this.loginService.getUsuarioActual();
-
-    // Extraemos id_usuario del usuario logueado
     const rawId = usuarioActual?.id_usuario ?? usuarioActual?.id;
     const idUsuarioActual = Number(rawId);
 
@@ -174,30 +202,38 @@ export class OportunidadComponent implements OnInit, AfterViewInit {
     }
 
     const textoComentario = this.nuevoComentario ? this.nuevoComentario.trim() : '';
+    
+    this.loading = true; // Bloquea el botón (evita múltiples clicks)
 
-    // 👈 LLAMADA CORRECTA: Parámetros individuales
+    // 1️⃣ Guardar en Node.js (MySQL + Multer)
     this.oportunidadServices.agregarComentario(
       idOportunidad, 
       textoComentario, 
       idUsuarioActual, 
       this.archivoSeleccionado || undefined
     ).subscribe({
-      next: (comentarioGuardado: any) => {
-        this.toastr.success('Novedad/Cotización registrada', 'Éxito');
-
-        if (!this.oportunidad.comentarios) {
-          this.oportunidad.comentarios = [];
-        }
-
-        this.oportunidad.comentarios.push(comentarioGuardado);
-        this.nuevoComentario = '';
-        this.archivoSeleccionado = null;
+      next: async (comentarioGuardado: any) => {
         
-        setTimeout(() => this.scrollToBottom(), 50);
+        // 2️⃣ Node respondió OK. Sincronizamos a Firebase (Efecto WhatsApp)
+        try {
+          await this.chatService.sincronizarMensaje(idOportunidad, comentarioGuardado);
+          
+          this.toastr.success('Novedad registrada', 'Éxito');
+          this.nuevoComentario = '';
+          this.archivoSeleccionado = null;
+          
+          // No hacemos .push() local porque la suscripción a Firebase lo inyecta automáticamente.
+        } catch (error) {
+          console.error('Error al sincronizar con Firebase:', error);
+          this.toastr.error('Se guardó, pero falló la actualización en vivo', 'Advertencia');
+        } finally {
+          this.loading = false;
+        }
       },
       error: (err) => {
         console.error('Error al agregar comentario:', err);
-        this.toastr.error(err?.error?.msg || 'Error al registrar la novedad o subir el archivo', 'Error');
+        this.toastr.error(err?.error?.msg || 'Error al registrar la novedad', 'Error');
+        this.loading = false;
       }
     });
   }

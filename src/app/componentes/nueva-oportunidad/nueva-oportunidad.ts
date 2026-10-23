@@ -10,6 +10,10 @@ import { LoginService } from '../../services/login-service';
 import { UsuarioService } from '../../services/usuario-service';
 import { CotizacionDolar } from '../cotizacion-dolar/cotizacion-dolar';
 
+// 👈 1. Importación de las directivas
+import { InputMonedaDirective } from '../../directivas/input-moneda';
+import { CalculadoraMargenDirective } from '../../directivas/calculadora-margen';
+
 @Component({
   selector: 'app-nueva-oportunidad',
   standalone: true,
@@ -17,7 +21,9 @@ import { CotizacionDolar } from '../cotizacion-dolar/cotizacion-dolar';
     CommonModule,
     FormsModule,
     RouterLink,
-    CotizacionDolar
+    CotizacionDolar,
+    InputMonedaDirective,       // 👈 2. Registro de directivas
+    CalculadoraMargenDirective
   ],
   templateUrl: './nueva-oportunidad.html',
   styleUrl: './nueva-oportunidad.css',
@@ -39,6 +45,8 @@ export class NuevaOportunidad implements OnInit {
     producto: '',
     fechaCierreEstimado: '',
     monto: null,
+    precioVenta: null,     // 👈 Preparado para recibir el cálculo
+    margen_ganancia: 10,   // 👈 10% por defecto
     plazoProveedor: '',
     plazoCliente: '',
     observaciones: ''
@@ -125,6 +133,8 @@ export class NuevaOportunidad implements OnInit {
       producto: this.form.producto ? this.form.producto.trim() : null,
       fecha_cierre_estimado: this.form.fechaCierreEstimado || null,
       operacion_monto_estimado: this.form.monto || null,
+      precio_venta: this.form.precioVenta || null,         // 👈 3. Se envía al backend
+      margen_ganancia: this.form.margen_ganancia || null,  // 👈 3. Se envía al backend
       plazo_pago_proveedor: this.form.plazoProveedor ? this.form.plazoProveedor.trim() : null,
       plazo_pago_cliente: this.form.plazoCliente ? this.form.plazoCliente.trim() : null,
       observaciones: this.form.observaciones ? this.form.observaciones.trim() : null

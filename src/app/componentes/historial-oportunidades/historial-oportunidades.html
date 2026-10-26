@@ -1,0 +1,66 @@
+<div class="container">
+  <div class="card">
+    <h2>Historial de Oportunidades</h2>
+
+    <input 
+      type="text" 
+      class="buscador" 
+      placeholder="Buscar por título, cliente, producto o ID..." 
+      [(ngModel)]="filtro"
+      (input)="filtrar()"
+    />
+
+    <div class="tabla-responsive">
+      <table class="tabla-oportunidades">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Cliente</th>
+            <th>Producto</th>
+            <th>Estado</th>
+            <th>Última actualización</th>
+            @if (esAdmin) {
+              <th>Asignado a</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (op of listaFiltrada; track op.id_oportunidad) {
+            <tr class="fila-oportunidad" (click)="abrirOportunidad(op)">
+              <td class="col-id">#{{ op.id_oportunidad }}</td>
+              <td class="col-titulo"><strong>{{ op.titulo_oportunidad }}</strong></td>
+              <td class="col-cliente">{{ op.datosCliente?.razon_social || 'Sin cliente' }}</td>
+              <td>{{ op.producto || '-' }}</td>
+              <td>
+                <span class="badge" [ngClass]="getBadgeClass(op.avance_proyecto)">
+                  {{ getAvanceTexto(op.avance_proyecto) }}
+                </span>
+              </td>
+              <td class="col-fecha">{{ op.updatedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+              
+              @if (esAdmin) {
+                <td class="col-usuario">
+                  {{ op.usuarioAsignado?.nombre }} {{ op.usuarioAsignado?.apellido }}
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr>
+              <td [attr.colspan]="esAdmin ? 7 : 6" class="sin-resultados">
+                No se encontraron oportunidades en el historial.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (oportunidadSeleccionada) {
+      <app-oportunidad-component
+        [oportunidad]="oportunidadSeleccionada"
+        (cerrar)="cerrar()">
+      </app-oportunidad-component>
+    }
+  </div>
+</div>

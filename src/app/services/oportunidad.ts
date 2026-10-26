@@ -74,5 +74,6 @@ export class OportunidadService {
 
     return this.http.post(`${this.AppUrl}/oportunidades/${idOportunidad}/comentarios`, formData);
   }
+
 }
 

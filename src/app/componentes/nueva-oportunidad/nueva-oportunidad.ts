@@ -10,9 +10,9 @@ import { LoginService } from '../../services/login-service';
 import { UsuarioService } from '../../services/usuario-service';
 import { CotizacionDolar } from '../cotizacion-dolar/cotizacion-dolar';
 
-// 👈 1. Importación de las directivas
 import { InputMonedaDirective } from '../../directivas/input-moneda';
 import { CalculadoraMargenDirective } from '../../directivas/calculadora-margen';
+import { ClienteService } from '../../services/cliente';
 
 @Component({
   selector: 'app-nueva-oportunidad',
@@ -22,7 +22,7 @@ import { CalculadoraMargenDirective } from '../../directivas/calculadora-margen'
     FormsModule,
     RouterLink,
     CotizacionDolar,
-    InputMonedaDirective,       // 👈 2. Registro de directivas
+    InputMonedaDirective,
     CalculadoraMargenDirective
   ],
   templateUrl: './nueva-oportunidad.html',
@@ -36,6 +36,12 @@ export class NuevaOportunidad implements OnInit {
   public filtroUsuario: string = '';
   public mostrarListaUsuarios = false;
   public loading = false;
+  
+  // Variables para el buscador dinámico de clientes
+  public clientes: any[] = [];
+  public clientesFiltrados: any[] = []; 
+  public filtroCliente: string = '';    
+  public mostrarListaClientes = false;  
 
   form: any = {
     titulo: '',
@@ -45,13 +51,14 @@ export class NuevaOportunidad implements OnInit {
     producto: '',
     fechaCierreEstimado: '',
     monto: null,
-    precioVenta: null,     // 👈 Preparado para recibir el cálculo
-    margen_ganancia: 10,   // 👈 10% por defecto
+    precioVenta: null,
+    margen_ganancia: 10,
     plazoProveedor: '',
     plazoCliente: '',
     observaciones: ''
   };
 
+  private clienteService = inject(ClienteService);
   private toastr = inject(ToastrService);
   private router = inject(Router);
   private oportunidadService = inject(OportunidadService);
@@ -64,6 +71,14 @@ export class NuevaOportunidad implements OnInit {
     if (this.esAdmin) {
       this.cargarUsuarios();
     }
+    
+    this.clienteService.getClientes().subscribe({
+      next: (data) => {
+        this.clientes = data;
+        this.clientesFiltrados = data; // Inicializamos la lista filtrada
+      },
+      error: (err) => console.error('Error al obtener clientes', err)
+    });
   }
 
   cargarUsuarios(): void {
@@ -105,8 +120,34 @@ export class NuevaOportunidad implements OnInit {
     }, 200);
   }
 
+  // Métodos del Buscador de Clientes
+  onBuscarCliente(): void {
+    const texto = this.filtroCliente.toLowerCase().trim();
+    if (!texto) {
+      this.clientesFiltrados = this.clientes;
+    } else {
+      this.clientesFiltrados = this.clientes.filter(c => 
+        (c.razon_social || '').toLowerCase().includes(texto) ||
+        (c.cuit || '').toLowerCase().includes(texto)
+      );
+    }
+    this.mostrarListaClientes = true;
+  }
+
+  seleccionarCliente(cliente: any): void {
+    this.form.cliente = cliente.id_cliente; 
+    this.filtroCliente = cliente.razon_social;
+    this.mostrarListaClientes = false;
+  }
+
+  ocultarListaClientesConDelay(): void {
+    setTimeout(() => {
+      this.mostrarListaClientes = false;
+    }, 200);
+  }
+
   guardar(): void {
-    if (!this.form.titulo?.trim() || !this.form.cliente?.trim()) {
+    if (!this.form.titulo?.trim() || !this.form.cliente) {
       this.toastr.warning('Por favor complete los campos requeridos (Título y Cliente)', 'Campos vacíos');
       return;
     }
@@ -125,16 +166,24 @@ export class NuevaOportunidad implements OnInit {
       return;
     }
 
+    const limpiarMoneda = (valor: any): number | null => {
+      if (!valor) return null;
+      if (typeof valor === 'number') return valor;
+      const valorLimpio = valor.toString().replace(/[\$\s\.]/g, '').replace(',', '.');
+      const numero = parseFloat(valorLimpio);
+      return isNaN(numero) ? null : numero;
+    };
+
     const nuevaOportunidadData = {
       titulo_oportunidad: this.form.titulo.trim(),
       id_usuario_asignado: idUsuarioAsignado,
-      cliente: this.form.cliente.trim(),
+      id_cliente: Number(this.form.cliente),
       marca: this.form.marca ? this.form.marca.trim() : null,
       producto: this.form.producto ? this.form.producto.trim() : null,
       fecha_cierre_estimado: this.form.fechaCierreEstimado || null,
-      operacion_monto_estimado: this.form.monto || null,
-      precio_venta: this.form.precioVenta || null,         // 👈 3. Se envía al backend
-      margen_ganancia: this.form.margen_ganancia || null,  // 👈 3. Se envía al backend
+      operacion_monto_estimado: limpiarMoneda(this.form.monto),
+      precio_venta: limpiarMoneda(this.form.precioVenta),      
+      margen_ganancia: this.form.margen_ganancia || null,
       plazo_pago_proveedor: this.form.plazoProveedor ? this.form.plazoProveedor.trim() : null,
       plazo_pago_cliente: this.form.plazoCliente ? this.form.plazoCliente.trim() : null,
       observaciones: this.form.observaciones ? this.form.observaciones.trim() : null

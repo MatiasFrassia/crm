@@ -3,16 +3,27 @@
     <div class="logo">Fapaz</div>
 
     <div class="menu">
-      <a routerLink="/lista">Oportunidades</a>
-      <a routerLink="/dashboard">Dashboard</a>
-      <a routerLink="/carteraClientes">Cartera de Clientes</a>
+      <!-- 🟢 Vista exclusiva para Clientes -->
+      @if (isCliente$ | async) {
+        <a routerLink="/portal-cliente">Pedidos</a>
+        <a routerLink="/mi-perfil">Mi Perfil</a>
+      } 
+      <!-- 🛑 Vista exclusiva para Usuarios Internos (Admin/Staff) -->
+      @else {
+        <a routerLink="/lista">Oportunidades</a>
+        <a routerLink="/dashboard">Dashboard</a>
+        <a routerLink="/carteraClientes">Cartera de Clientes</a>
+        <a routerLink="/historial">Historial</a>
 
-      <!-- Renderizado condicional asincrónico -->
-      @if (isAdmin$ | async) {
-        <a routerLink="/administrar-usuarios">Usuarios</a>
+        @if (isAdmin$ | async) {
+          <a routerLink="/administrar-usuarios">Usuarios</a>
+        }
       }
+      
     </div>
-
+    <button (click)="toggleTheme()" style="background: none; color: var(--texto-principal); border: 1px solid var(--borde-color);">
+          {{ themeService.isDark ? '☀️ Claro' : '🌙 Oscuro' }}
+    </button>
     <button (click)="logout()">Cerrar sesión</button>
   </nav>
 }

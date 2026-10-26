@@ -1,12 +1,12 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://192.168.1.57:3016/', // Cambia esto a la URL de tu API
+  apiUrl: 'http://localhost:3016/', // Cambia esto a la URL de tu API
   firebase: {
-    apiKey: "AIzaSyBVLC3huDMBCFzrHAXf2873jcZzrw_6SeE",
+    apiKey: "AIzaSyBVLC3huOWBCFzrMAXf2B73jcZzrw_5SeE",
     authDomain: "crm-fapaz.firebaseapp.com",
     projectId: "crm-fapaz",
     storageBucket: "crm-fapaz.firebasestorage.app",
     messagingSenderId: "115483931766",
-    appId: "1:115483931766:web:5ba14b8851b8af2fbe1b57"
+    appId: "1:115483931766:web:5ba14b8051b8af2fbe1b57"
   }
 };

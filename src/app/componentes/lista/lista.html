@@ -2,34 +2,57 @@
   <div class="card">
     <h2>{{ esAdmin ? 'Todas las Oportunidades' : 'Mis Oportunidades' }}</h2>
 
-    <!-- Contenedor de Botones Superior -->
     <div class="header">
       <button routerLink="/nueva-oportunidad" class="btn-nuevo">+ Nueva</button>
       <button type="button" class="btn-exportar" (click)="exportarCSV()">📥 Exportar CSV</button>
     </div>
 
-    <input type="text" placeholder="Buscar oportunidades..." [(ngModel)]="filtro" />
+    <input type="text" class="buscador" placeholder="Buscar por título, cliente, producto o ID..." [(ngModel)]="filtro" />
 
-    <div class="tabla-header">
-      <div>Título</div>
-      <div>Marca</div>
-      <div>Cliente</div>
-      <div>Producto</div>
-      <div>Última actualización</div>
-    </div>
-
-    <div class="tabla-body">
-      @for (op of (((oportunidades$ | async) ?? []) | filtrarOportunidad:(filtro ?? '')); track $index) {
-        <div class="fila" (click)="abrirOportunidad(op)">
-          <div><strong>#{{ op.id_oportunidad}}</strong> - {{ op.titulo_oportunidad }}</div>
-          <div>{{ op.marca || '-' }}</div>
-          <div>{{ op.cliente }}</div>
-          <div>{{ op.producto || '-' }}</div>
-          <div>{{ (op.fecha_actualizacion) | date:'dd/MM/yyyy HH:mm' }}</div>
-        </div>
-      } @empty {
-        <div class="sin-datos">Sin oportunidades registradas</div>
-      }
+    <div class="tabla-responsive">
+      <table class="tabla-oportunidades">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Cliente</th>
+            <th>Producto</th>
+            <th>Estado</th>
+            <th>Última actualización</th>
+            @if (esAdmin) {
+              <th>Asignado a</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (op of (((oportunidades$ | async) ?? []) | filtrarOportunidad:filtro); track op.id_oportunidad) {
+            <tr class="fila-oportunidad" (click)="abrirOportunidad(op)">
+              <td class="col-id">#{{ op.id_oportunidad }}</td>
+              <td class="col-titulo"><strong>{{ op.titulo_oportunidad }}</strong></td>
+              <td class="col-cliente">{{ op.datosCliente?.razon_social || 'Sin cliente' }}</td>
+              <td>{{ op.producto || '-' }}</td>
+              <td>
+                <span class="badge" [ngClass]="getBadgeClass(op.avance_proyecto)">
+                  {{ getAvanceTexto(op.avance_proyecto) }}
+                </span>
+              </td>
+              <td class="col-fecha">{{ op.updatedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+              
+              @if (esAdmin) {
+                <td class="col-usuario">
+                  {{ op.usuarioAsignado?.nombre }} {{ op.usuarioAsignado?.apellido }}
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr>
+              <td [attr.colspan]="esAdmin ? 7 : 6" class="sin-resultados">
+                No se encontraron oportunidades.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
 
     @if (oportunidadSeleccionada) {

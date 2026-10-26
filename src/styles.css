@@ -1,1 +1,29 @@
 @import 'ngx-toastr/toastr';/* You can add global styles to this file, and also import other style files */
+:root {
+  /* Paleta Modo Claro */
+  --bg-fondo: #ffffff;
+  --bg-navbar: #f5f5f5;
+  --bg-tarjeta: #ffffff;
+  --texto-principal: #333333;
+  --texto-secundario: #666666;
+  --borde-color: #eeeeee;
+  --hover-fila: #fcfcfc;
+}
+
+body.dark-mode {
+  /* Paleta Modo Oscuro */
+  --bg-fondo: #121212;
+  --bg-navbar: #1e1e1e;
+  --bg-tarjeta: #242424;
+  --texto-principal: #e0e0e0;
+  --texto-secundario: #aaaaaa;
+  --borde-color: #333333;
+  --hover-fila: #2a2a2a;
+}
+
+/* Aplicación global básica */
+body {
+  background-color: var(--bg-fondo);
+  color: var(--texto-principal);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

@@ -1,0 +1,125 @@
+/* Contenedor principal con el fondo celeste */
+.background {
+  min-height: calc(100vh - 60px);
+  background: linear-gradient(to bottom, #39c2f8, #2ab3e8); 
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+}
+
+/* Tarjeta blanca central */
+.form-container {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 850px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 40px 50px;
+  box-sizing: border-box;
+}
+
+/* Encabezados */
+.form-container h2 {
+  text-align: center;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.form-container p {
+  text-align: center;
+  color: #666;
+  margin-bottom: 35px;
+  font-size: 14px;
+}
+
+/* Grilla del formulario */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 25px;
+}
+
+/* Para que elementos ocupen todo el ancho */
+.full-width {
+  grid-column: span 2;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Etiquetas */
+.form-group label {
+  font-size: 12px;
+  color: #777;
+  margin-bottom: 8px;
+}
+
+/* Inputs */
+.form-group input {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+
+.form-group input:focus {
+  border-color: #39c2f8;
+}
+
+.form-group input:disabled {
+  background-color: #f5f5f5;
+  color: #999;
+}
+
+/* Contenedor del botón centrado */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+/* Botón principal */
+.form-actions button {
+  background-color: #55b9ff; 
+  color: white;
+  border: none;
+  padding: 10px 35px;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.form-actions button:hover {
+  background-color: #40a5e8;
+}
+
+.form-actions button:disabled {
+  background-color: #a3d4f7;
+  cursor: not-allowed;
+}
+
+/* Adaptación para pantallas pequeñas */
+@media (max-width: 650px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .full-width {
+    grid-column: span 1;
+  }
+  .form-container {
+    padding: 30px 20px;
+  }
+}

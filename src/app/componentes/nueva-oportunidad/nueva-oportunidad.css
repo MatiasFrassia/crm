@@ -164,3 +164,47 @@ button.secondary:hover {
     grid-column: span 1;
   }
 }
+
+.selector-container {
+  position: relative;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.dropdown-list li {
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: #333;
+}
+
+.dropdown-list li:hover {
+  background-color: #f0f9ff;
+  color: #0284c7;
+}
+
+.dropdown-list .sin-resultados {
+  color: #999;
+  cursor: default;
+}
+
+.dropdown-list .sin-resultados:hover {
+  background-color: #ffffff;
+  color: #999;
+}

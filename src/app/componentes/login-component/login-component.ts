@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { LoginService } from '../../services/login-service'; // 👈 Importamos LoginService
+import { LoginService } from '../../services/login-service';
 
 @Component({
   selector: 'app-login-component',
@@ -14,8 +14,9 @@ export class LoginComponent {
   email = '';
   password = '';
   loading = false;
+  loadingGoogle = false; // 👈 Nuevo estado de carga
 
-  private loginService = inject(LoginService); // 👈 Inyectamos LoginService
+  private loginService = inject(LoginService);
   private toastr = inject(ToastrService);
 
   logIn(): void {
@@ -26,7 +27,6 @@ export class LoginComponent {
 
     this.loading = true;
 
-    // 🟢 Invocamos LoginService para que ejecute todo el flujo de sesión reactivo
     this.loginService.login(this.email, this.password).subscribe({
       next: () => {
         this.loading = false;
@@ -35,5 +35,14 @@ export class LoginComponent {
         this.loading = false;
       }
     });
+  }
+
+  // 🟢 NUEVO: Dispara el popup de Google
+  loginGoogle(): void {
+    this.loadingGoogle = true;
+    this.loginService.loginConGoogle();
+    
+    // Quitamos el loading después de unos segundos en caso de que cierre el popup
+    setTimeout(() => this.loadingGoogle = false, 3000); 
   }
 }

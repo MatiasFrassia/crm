@@ -1,0 +1,78 @@
+.contenedor-principal {
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-acciones {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.header-acciones h2 {
+  color: #333;
+  margin: 0;
+}
+
+.btn-nuevo {
+  background-color: #e53935;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+.btn-nuevo:hover { background-color: #c62828; }
+
+/* Estilos de tabla genéricos */
+.tabla-container {
+  background: var(--bg-tarjeta);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+.tabla-clientes {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-clientes th, .tabla-clientes td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.tabla-clientes th {
+ background-color: var(--bg-navbar);
+  color: var(--texto-secundario);
+  font-weight: 600;
+}
+
+.tabla-clientes tr:hover { background-color: #fcfcfc; }
+.empty-state { text-align: center; color: #888; padding: 30px !important; }
+
+/* Reciclamos estilos de grilla del perfil para el formulario interno */
+.form-container {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
+  border: 1px solid #e0e0e0;
+}
+.form-container h3 { margin-top: 0; color: #444; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.full-width { grid-column: span 2; }
+.form-group { display: flex; flex-direction: column; }
+.form-group label { font-size: 12px; color: #666; margin-bottom: 5px; }
+.form-group input { padding: 9px; border: 1px solid #ccc; border-radius: 5px; outline: none; }
+.form-group input:focus { border-color: #e53935; }
+.form-actions { display: flex; justify-content: flex-end; margin-top: 10px; }
+.form-actions button { background: #55b9ff; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; }
+.form-actions button:hover { background: #40a5e8; }

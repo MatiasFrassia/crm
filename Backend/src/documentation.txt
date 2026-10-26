@@ -13,9 +13,10 @@ Instalar dependencias de TS:
 - npm i --save-dev @types/bcrypt
 - npm i --save-dev @types/jsonwebtoken
 - npm i --save-dev @types/cors
+- npm install multer (Para permitir el adjuntar archivos)
+- npm install -D @types/multer
 
 Frontend
 
 Instalacion de environments:
 - ng generate environments
-- npm install firebase @angular/fire --legacy-peer-deps (conexion forzada de firebase)

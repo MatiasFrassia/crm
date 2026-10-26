@@ -21,7 +21,8 @@ import { UsuarioService } from '../../services/usuario-service';
 import { LoginService } from '../../services/login-service';
 import { CotizacionDolar } from '../cotizacion-dolar/cotizacion-dolar';
 import { ChatService } from '../../services/chat-service';
-import { InputMonedaDirective } from '../../directivas/input-moneda'; // 👈 1. Importación agregada
+import { ClienteService } from '../../services/cliente'; // 👈 Importamos ClienteService
+import { InputMonedaDirective } from '../../directivas/input-moneda'; 
 import { CalculadoraMargenDirective } from '../../directivas/calculadora-margen';
 
 @Component({
@@ -33,7 +34,7 @@ import { CalculadoraMargenDirective } from '../../directivas/calculadora-margen'
     FormsModule,
     CotizacionDolar,
     InputMonedaDirective,
-    CalculadoraMargenDirective // 👈 2. Directiva registrada en los imports
+    CalculadoraMargenDirective 
   ],
   templateUrl: './oportunidad-component.html',
   styleUrl: './oportunidad-component.css',
@@ -55,11 +56,18 @@ export class OportunidadComponent implements OnInit, AfterViewInit, OnDestroy {
   public mensajesChat: any[] = []; 
   private chatSub!: Subscription;
 
+  // 🟢 Variables para el Selector de Clientes
+  public clientes: any[] = [];
+  public clientesFiltrados: any[] = [];
+  public filtroCliente: string = '';
+  public mostrarListaClientes = false;
+
   private oportunidadServices = inject(OportunidadService);
   private usuarioService = inject(UsuarioService);
   private loginService = inject(LoginService);
   private toastr = inject(ToastrService);
   private chatService = inject(ChatService);
+  private clienteService = inject(ClienteService); // 👈 Inyectamos ClienteService
 
   ngOnInit(): void {
     this.esAdmin = this.loginService.getIsAdmin();
@@ -71,16 +79,20 @@ export class OportunidadComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
 
+    // 🟢 Cargar Clientes e inicializar el input
+    this.cargarClientes();
+    if (this.oportunidad?.datosCliente?.razon_social) {
+      this.filtroCliente = this.oportunidad.datosCliente.razon_social;
+    }
+
     if (this.oportunidad && !this.oportunidad.comentarios) {
       this.oportunidad.comentarios = [];
     }
 
-    // ⚡ CONECTAR AL CHAT EN TIEMPO REAL CON FIREBASE
     const idOportunidad = this.oportunidad?.id_oportunidad || this.oportunidad?.id;
     if (idOportunidad) {
       this.chatSub = this.chatService.obtenerMensajes(Number(idOportunidad)).subscribe({
         next: (mensajes) => {
-          // Ordenamos los mensajes cronológicamente
           this.mensajesChat = mensajes.sort((a, b) => a.createdAt - b.createdAt);
           setTimeout(() => this.scrollToBottom(), 100);
         },
@@ -89,12 +101,48 @@ export class OportunidadComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  // 🟢 Métodos del Buscador de Clientes
+  cargarClientes(): void {
+    this.clienteService.getClientes().subscribe({
+      next: (data) => {
+        this.clientes = data;
+        this.clientesFiltrados = data;
+      },
+      error: (err) => console.error('Error al cargar clientes:', err)
+    });
+  }
+
+  onBuscarCliente(): void {
+    const texto = this.filtroCliente.toLowerCase().trim();
+    if (!texto) {
+      this.clientesFiltrados = this.clientes;
+    } else {
+      this.clientesFiltrados = this.clientes.filter(c => 
+        (c.razon_social || '').toLowerCase().includes(texto) ||
+        (c.cuit || '').toLowerCase().includes(texto)
+      );
+    }
+    this.mostrarListaClientes = true;
+  }
+
+  seleccionarCliente(cliente: any): void {
+    this.oportunidad.id_cliente = cliente.id_cliente; 
+    this.oportunidad.datosCliente = cliente;
+    this.filtroCliente = cliente.razon_social;
+    this.mostrarListaClientes = false;
+  }
+
+  ocultarListaClientesConDelay(): void {
+    setTimeout(() => {
+      this.mostrarListaClientes = false;
+    }, 200);
+  }
+
   ngAfterViewInit(): void {
     setTimeout(() => this.scrollToBottom(), 100);
   }
 
   ngOnDestroy(): void {
-    // Seguridad adicional: desconectar si el componente se destruye
     if (this.chatSub) {
       this.chatSub.unsubscribe();
     }
@@ -130,7 +178,6 @@ export class OportunidadComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   cerrarModal(): void {
-    // ⚡ Desconectar de Firebase para no consumir recursos en segundo plano
     if (this.chatSub) {
       this.chatSub.unsubscribe();
     }
@@ -177,9 +224,6 @@ export class OportunidadComponent implements OnInit, AfterViewInit, OnDestroy {
     this.archivoSeleccionado = null;
   }
 
-  /**
-   * Envía el comentario a MySQL y luego lo sincroniza a Firebase
-   */
   agregarComentario(): void {
     if ((!this.nuevoComentario || !this.nuevoComentario.trim()) && !this.archivoSeleccionado) {
       this.toastr.warning('Escriba un comentario o adjunte una cotización PDF', 'Atención');
@@ -203,9 +247,8 @@ export class OportunidadComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const textoComentario = this.nuevoComentario ? this.nuevoComentario.trim() : '';
     
-    this.loading = true; // Bloquea el botón (evita múltiples clicks)
+    this.loading = true; 
 
-    // 1️⃣ Guardar en Node.js (MySQL + Multer)
     this.oportunidadServices.agregarComentario(
       idOportunidad, 
       textoComentario, 
@@ -213,16 +256,11 @@ export class OportunidadComponent implements OnInit, AfterViewInit, OnDestroy {
       this.archivoSeleccionado || undefined
     ).subscribe({
       next: async (comentarioGuardado: any) => {
-        
-        // 2️⃣ Node respondió OK. Sincronizamos a Firebase (Efecto WhatsApp)
         try {
           await this.chatService.sincronizarMensaje(idOportunidad, comentarioGuardado);
-          
           this.toastr.success('Novedad registrada', 'Éxito');
           this.nuevoComentario = '';
           this.archivoSeleccionado = null;
-          
-          // No hacemos .push() local porque la suscripción a Firebase lo inyecta automáticamente.
         } catch (error) {
           console.error('Error al sincronizar con Firebase:', error);
           this.toastr.error('Se guardó, pero falló la actualización en vivo', 'Advertencia');

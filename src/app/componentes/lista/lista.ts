@@ -3,7 +3,7 @@ import { DatePipe, CommonModule } from '@angular/common';
 import { RouterLink } from "@angular/router";
 import { FormsModule } from '@angular/forms';
 import { Observable, of } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 
 import { OportunidadService } from '../../services/oportunidad';
 import { Oportunidad } from '../../clases/oportunidad';
@@ -52,16 +52,15 @@ export class Lista implements OnInit {
       return;
     }
 
-    if (this.esAdmin) {
-      this.oportunidades$ = this.oportunidadServices.getOportunidades();
-    } else {
-      const idUsuario = usuarioActual.id_usuario || usuarioActual.id;
-      if (idUsuario) {
-        this.oportunidades$ = this.oportunidadServices.getOportunidadesPorUsuario(idUsuario);
-      } else {
-        this.oportunidades$ = of([]);
-      }
-    }
+    // Obtenemos las oportunidades y filtramos para mostrar SOLO las activas (excluir 0 y 100)
+    const request = this.esAdmin 
+      ? this.oportunidadServices.getOportunidades() 
+      : this.oportunidadServices.getOportunidadesPorUsuario(usuarioActual.id_usuario || usuarioActual.id);
+
+    // Mapeamos el observable para filtrar las cerradas de la vista principal
+    this.oportunidades$ = request.pipe(
+      map((ops: any[]) => ops.filter(op => Number(op.avance_proyecto) !== 0 && Number(op.avance_proyecto) !== 100))
+    );
   }
 
   abrirOportunidad(op: any): void {
@@ -73,15 +72,38 @@ export class Lista implements OnInit {
     this.cargarOportunidades(); 
   }
 
-  /**
-   * 🌟 Exporta la vista actual a un archivo CSV (Formato Excel Español)
-   */
+  // 🟢 MÉTODOS PARA BADGES DE ESTADO
+  getAvanceTexto(avance: number | undefined): string {
+    // Si el avance es 0, evaluamos explícitamente (Number(0) es falso para el '|| 1')
+    const val = avance !== undefined && avance !== null ? Number(avance) : 1;
+    switch(val) {
+      case 1: return 'Inicial';
+      case 30: return 'En progreso';
+      case 60: return 'Best case';
+      case 90: return 'Compromiso';
+      case 100: return 'Ganado';
+      case 0: return 'Perdida';
+      default: return 'Desconocido';
+    }
+  }
+
+  getBadgeClass(avance: number | undefined): string {
+    const val = avance !== undefined && avance !== null ? Number(avance) : 1;
+    switch(val) {
+      case 1: return 'badge-inicial';
+      case 30: return 'badge-progreso';
+      case 60: return 'badge-bestcase';
+      case 90: return 'badge-compromiso';
+      case 100: return 'badge-ganado';
+      case 0: return 'badge-perdida';
+      default: return 'badge-default';
+    }
+  }
+
   exportarCSV(): void {
     this.oportunidades$.pipe(take(1)).subscribe({
       next: (oportunidades) => {
         const datos = oportunidades || [];
-        
-        // 1. Aplicamos el mismo filtro visualizado en pantalla
         const datosFiltrados = this.pipeFiltro.transform(datos, this.filtro);
 
         if (datosFiltrados.length === 0) {
@@ -89,35 +111,36 @@ export class Lista implements OnInit {
           return;
         }
 
-        // 2. Definir cabeceras del CSV
-        const cabeceras = ['ID', 'Título', 'Marca', 'Cliente', 'Producto', 'Última Actualización'];
+        // Se agregan Estado y Usuario Asignado al CSV
+        const cabeceras = ['ID', 'Título', 'Marca', 'Cliente', 'Producto', 'Estado', 'Última Actualización', 'Asignado a'];
 
-        // 3. Formatear y escapar las filas para evitar roturas
         const filas = datosFiltrados.map((op: any) => {
           const id = op.id_oportunidad || op.id || '';
           const titulo = op.titulo_oportunidad || '';
           const marca = op.marca || '';
-          const cliente = op.cliente || '';
+          const cliente = op.datosCliente?.razon_social || ''; // 👈 Ahora lee el cliente relacional
           const producto = op.producto || '';
+          const estado = this.getAvanceTexto(op.avance_proyecto);
           
-          const fechaRaw = op.updatedAt || op.fecha_actualizacion;
+          const fechaRaw = op.updatedAt; // 👈 Sequelize usa updatedAt
           const fecha = fechaRaw ? new Date(fechaRaw).toLocaleString() : '';
+          
+          const asignado = op.usuarioAsignado ? `${op.usuarioAsignado.nombre} ${op.usuarioAsignado.apellido}`.trim() : '';
 
-          // Escapar comillas dobles internamente y envolver la celda en comillas
           return [
             `"${id}"`,
             `"${titulo.toString().replace(/"/g, '""')}"`,
             `"${marca.toString().replace(/"/g, '""')}"`,
             `"${cliente.toString().replace(/"/g, '""')}"`,
             `"${producto.toString().replace(/"/g, '""')}"`,
-            `"${fecha}"`
-          ].join(';'); // 👈 Se cambia ',' por ';' para que Excel lo separe en columnas
+            `"${estado}"`,
+            `"${fecha}"`,
+            `"${asignado}"`
+          ].join(';'); 
         });
 
-        // 4. Construir contenido (Añadimos \ufeff para compatibilidad de tildes en Excel)
-        const csvContent = '\ufeff' + cabeceras.join(';') + '\n' + filas.join('\n'); // 👈 Se cambia ',' por ';'
+        const csvContent = '\ufeff' + cabeceras.join(';') + '\n' + filas.join('\n'); 
         
-        // 5. Crear blob interactivo y forzar descarga
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = window.URL.createObjectURL(blob);
         const enlaceDescarga = document.createElement('a');
@@ -126,7 +149,7 @@ export class Lista implements OnInit {
         enlaceDescarga.download = `Oportunidades_Exportadas_${new Date().getTime()}.csv`;
         enlaceDescarga.click();
         
-        window.URL.revokeObjectURL(url); // Liberar memoria
+        window.URL.revokeObjectURL(url); 
         this.toastr.success('Archivo exportado correctamente', 'Éxito');
       },
       error: () => {

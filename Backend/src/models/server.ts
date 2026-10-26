@@ -10,10 +10,12 @@ import routesOportunidad from '../routes/oportunidad.js';
 // Importación de Modelos para sincronización con MySQL
 import { User } from './user.js';
 import { Product } from './products.js';
+import { Cliente } from './cliente.js'; 
 import { Oportunidad } from './oportunidad.js';
 import { ComentarioOportunidad } from './comentario.js';
 import RDolar from '../routes/dolarApi.js';
 import path from 'path/win32';
+import RCliente from '../routes/cliente.js';
 
 class Server {
 
@@ -26,7 +28,6 @@ class Server {
         this.midlewares();
         this.router();
         this.DBconnect();
-        this.listen();
     }
 
     listen() {
@@ -36,32 +37,29 @@ class Server {
     }
 
     router() {
-        // Rutas del usuario y productos
         this.app.use(RUser);
         this.app.use(RProduct);
-        
-        // Ruta para gestión de Oportunidades
         this.app.use('/oportunidades', routesOportunidad);
         this.app.use('/dolarApi', RDolar);
+        this.app.use(RCliente);
     }
 
     midlewares() {
         this.app.use(express.json());
         this.app.use(cors());
-        // 📄 Habilitar acceso público a la carpeta uploads para ver/descargar los PDF
         this.app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
     }
 
     async DBconnect() {
         try {
-            // Sincronización de todas las tablas con la base de datos MySQL
-            await User.sync();
-            await Product.sync();
-            await Oportunidad.sync();
-            await ComentarioOportunidad.sync();
+            // Sincronización normal y segura sin borrar el historial
+            await User.sync({ alter: true });
+            await Product.sync({ alter: true });
+            await Cliente.sync({ alter: true });
+            await Oportunidad.sync({ alter: true });
+            await ComentarioOportunidad.sync({ alter: true });
             
             console.log('Tablas sincronizadas correctamente en MySQL');
-            console.log('Database connected successfully');
         } catch (error) {
             console.error('Unable to connect to the database:', error);
         }

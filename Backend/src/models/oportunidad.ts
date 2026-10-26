@@ -1,6 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/connection.js';
 import { User } from './user.js';
+import { Cliente } from './cliente.js'; // 👈 Importamos el nuevo modelo
 
 export class Oportunidad extends Model {}
 
@@ -17,16 +18,23 @@ Oportunidad.init(
     },
     id_usuario_asignado: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: false, // Puedes cambiarlo a true si los clientes crean oportunidades sin asignar inicialmente
       references: {
         model: User,
         key: 'id_usuario',
       },
     },
-    cliente: {
-      type: DataTypes.STRING,
-      allowNull: false,
+    
+    // 👈 Nueva relación formal con la tabla clientes
+    id_cliente: {
+      type: DataTypes.INTEGER,
+      allowNull: false, 
+      references: {
+        model: Cliente,
+        key: 'id_cliente',
+      },
     },
+    
     marca: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -88,5 +96,10 @@ Oportunidad.init(
   }
 );
 
+// Asociaciones de Usuario
 Oportunidad.belongsTo(User, { foreignKey: 'id_usuario_asignado', as: 'usuarioAsignado' });
 User.hasMany(Oportunidad, { foreignKey: 'id_usuario_asignado' });
+
+// 👈 Asociaciones de Cliente
+Oportunidad.belongsTo(Cliente, { foreignKey: 'id_cliente', as: 'datosCliente' });
+Cliente.hasMany(Oportunidad, { foreignKey: 'id_cliente' });

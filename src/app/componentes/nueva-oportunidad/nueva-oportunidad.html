@@ -48,15 +48,31 @@
       }
 
       <!-- Cliente -->
-      <div class="form-group">
+      <div class="form-group selector-container">
         <label>Cliente *</label>
         <input 
           type="text" 
-          name="cliente" 
-          [(ngModel)]="form.cliente" 
-          placeholder="Ej: Cresata" 
+          name="filtroCliente"
+          [(ngModel)]="filtroCliente" 
+          (input)="onBuscarCliente()" 
+          (focus)="mostrarListaClientes = true" 
+          (blur)="ocultarListaClientesConDelay()"
+          placeholder="Escriba razón social o CUIT..." 
+          autocomplete="off"
           required
         >
+
+        @if (mostrarListaClientes) {
+          <ul class="dropdown-list">
+            @for (cliente of clientesFiltrados; track cliente.id_cliente) {
+              <li (mousedown)="seleccionarCliente(cliente)">
+                {{ cliente.razon_social }}
+              </li>
+            } @empty {
+              <li class="sin-resultados">No se encontraron clientes</li>
+            }
+          </ul>
+        }
       </div>
 
       <!-- Marca -->

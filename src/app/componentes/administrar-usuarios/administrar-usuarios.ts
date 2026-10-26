@@ -37,18 +37,16 @@ export class AdministrarUsuariosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Al iniciar el componente, consultamos la base de datos
+    
     this.cargarUsuarios();
   }
 
-  /**
-   * Obtiene la lista actualizada de usuarios desde la base de datos MySQL a través de la API.
-   */
+  
   cargarUsuarios(): void {
     this.loading = true;
     this.usuarioService.getAllUsuarios().subscribe({
       next: (data: Usuario[]) => {
-        this.usuarios = data; // Guardamos los datos de la BD en la variable de la vista
+        this.usuarios = data; 
         this.loading = false;
       },
       error: (e) => {
@@ -59,9 +57,7 @@ export class AdministrarUsuariosComponent implements OnInit {
     });
   }
 
-  /**
-   * Envía la información del formulario a la API para crear o editar un usuario.
-   */
+  
   guardarUsuario(): void {
   if (
     !this.form.nombre.trim() || 
@@ -85,7 +81,7 @@ export class AdministrarUsuariosComponent implements OnInit {
   );
 
   if (this.modoEdicion) {
-    // 🟢 MODO EDICIÓN: Enviamos el ID guardado y el objeto
+    
     this.usuarioService.editarUsuarioAPI(this.usuarioSeleccionadoId, userObj).subscribe({
       next: () => {
         this.toastr.success('Usuario actualizado correctamente', 'Éxito');
@@ -99,7 +95,7 @@ export class AdministrarUsuariosComponent implements OnInit {
       }
     });
   } else {
-    // 🔵 MODO CREACIÓN
+    
     this.usuarioService.signIn(userObj).subscribe({
       next: () => {
         this.toastr.success('Usuario registrado correctamente', 'Éxito');
@@ -118,13 +114,13 @@ export class AdministrarUsuariosComponent implements OnInit {
   editar(usuario: Usuario): void {
   this.modoEdicion = true;
   
-  // Capturamos el ID asegurando compatibilidad con la clave primaria de MySQL
+  
   this.usuarioSeleccionadoId = usuario.id_usuario || (usuario as any).id;
 
   this.form.nombre = usuario.nombre;
   this.form.apellido = usuario.apellido;
   this.form.email = usuario.email;
-  this.form.password = ''; // Se deja limpia para no forzar cambio de clave
+  this.form.password = ''; 
   this.form.isAdmin = usuario.isAdmin;
 }
 

@@ -2,7 +2,7 @@ import type { Request, Response } from 'express';
 
 export const getCotizacionDolar = async (req: Request, res: Response) => {
   try {
-    // Consultamos en paralelo las cotizaciones Oficial y Blue
+    
     const [resOficial, resBlue] = await Promise.all([
       fetch('https://dolarapi.com/v1/dolares/oficial'),
       fetch('https://dolarapi.com/v1/dolares/blue')

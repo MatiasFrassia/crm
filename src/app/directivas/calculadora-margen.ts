@@ -31,12 +31,12 @@ export class CalculadoraMargenDirective implements OnChanges {
 
     if (!isNaN(margen) && !isNaN(monto)) {
       const precioFinal = monto + (monto * (margen / 100));
-      // ⚡ Solución: Retrasar la emisión al siguiente ciclo de Angular
+      
       setTimeout(() => {
         this.precioCalculado.emit(Number(precioFinal.toFixed(2)));
       });
     } else if (isNaN(margen) && !isNaN(monto)) {
-      // ⚡ Solución: Retrasar la emisión
+      
       setTimeout(() => {
         this.precioCalculado.emit(monto);
       });

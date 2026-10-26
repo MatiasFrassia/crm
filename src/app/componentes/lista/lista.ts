@@ -4,7 +4,6 @@ import { RouterLink } from "@angular/router";
 import { FormsModule } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-
 import { OportunidadService } from '../../services/oportunidad';
 import { Oportunidad } from '../../clases/oportunidad';
 import { OportunidadComponent } from '../oportunidad-component/oportunidad-component';
@@ -52,12 +51,12 @@ export class Lista implements OnInit {
       return;
     }
 
-    // Obtenemos las oportunidades y filtramos para mostrar SOLO las activas (excluir 0 y 100)
+    
     const request = this.esAdmin 
       ? this.oportunidadServices.getOportunidades() 
       : this.oportunidadServices.getOportunidadesPorUsuario(usuarioActual.id_usuario || usuarioActual.id);
 
-    // Mapeamos el observable para filtrar las cerradas de la vista principal
+    
     this.oportunidades$ = request.pipe(
       map((ops: any[]) => ops.filter(op => Number(op.avance_proyecto) !== 0 && Number(op.avance_proyecto) !== 100))
     );
@@ -72,9 +71,9 @@ export class Lista implements OnInit {
     this.cargarOportunidades(); 
   }
 
-  // 🟢 MÉTODOS PARA BADGES DE ESTADO
+  
   getAvanceTexto(avance: number | undefined): string {
-    // Si el avance es 0, evaluamos explícitamente (Number(0) es falso para el '|| 1')
+    
     const val = avance !== undefined && avance !== null ? Number(avance) : 1;
     switch(val) {
       case 1: return 'Inicial';
@@ -111,7 +110,7 @@ export class Lista implements OnInit {
           return;
         }
 
-        // Se agregan Estado y Usuario Asignado al CSV
+        
         const cabeceras = ['ID', 'Título', 'Marca', 'Cliente', 'Producto', 'Estado', 'Última Actualización', 'Asignado a'];
 
         const filas = datosFiltrados.map((op: any) => {

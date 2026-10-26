@@ -3,9 +3,7 @@ import { User } from '../models/user.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-/**
- * Registro de un nuevo usuario
- */
+
 export const register = async (req: Request, res: Response) => {
     const { nombre, apellido, email, password, isAdmin } = req.body;
 

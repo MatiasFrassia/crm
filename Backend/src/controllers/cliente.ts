@@ -74,11 +74,11 @@ export const actualizarCliente = async (req: Request, res: Response): Promise<vo
     }
 };
 
-// 🟢 NUEVA FUNCIÓN: Obtener todos los clientes para el selector de los empleados
+
 export const getClientes = async (req: Request, res: Response): Promise<void> => {
     try {
         const clientes = await Cliente.findAll({
-            // Traemos todos los campos útiles para la tabla
+            
             attributes: ['id_cliente', 'razon_social', 'cuit', 'email', 'telefono', 'direccion', 'estado']
         });
         res.json(clientes);

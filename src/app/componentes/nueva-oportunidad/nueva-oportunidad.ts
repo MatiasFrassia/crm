@@ -37,7 +37,7 @@ export class NuevaOportunidad implements OnInit {
   public mostrarListaUsuarios = false;
   public loading = false;
   
-  // Variables para el buscador dinámico de clientes
+
   public clientes: any[] = [];
   public clientesFiltrados: any[] = []; 
   public filtroCliente: string = '';    
@@ -75,7 +75,7 @@ export class NuevaOportunidad implements OnInit {
     this.clienteService.getClientes().subscribe({
       next: (data) => {
         this.clientes = data;
-        this.clientesFiltrados = data; // Inicializamos la lista filtrada
+        this.clientesFiltrados = data; 
       },
       error: (err) => console.error('Error al obtener clientes', err)
     });
@@ -120,7 +120,6 @@ export class NuevaOportunidad implements OnInit {
     }, 200);
   }
 
-  // Métodos del Buscador de Clientes
   onBuscarCliente(): void {
     const texto = this.filtroCliente.toLowerCase().trim();
     if (!texto) {

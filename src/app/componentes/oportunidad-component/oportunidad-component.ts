@@ -21,7 +21,7 @@ import { UsuarioService } from '../../services/usuario-service';
 import { LoginService } from '../../services/login-service';
 import { CotizacionDolar } from '../cotizacion-dolar/cotizacion-dolar';
 import { ChatService } from '../../services/chat-service';
-import { ClienteService } from '../../services/cliente'; // 👈 Importamos ClienteService
+import { ClienteService } from '../../services/cliente'; 
 import { InputMonedaDirective } from '../../directivas/input-moneda'; 
 import { CalculadoraMargenDirective } from '../../directivas/calculadora-margen';
 
@@ -52,11 +52,11 @@ export class OportunidadComponent implements OnInit, AfterViewInit, OnDestroy {
   public archivoSeleccionado: File | null = null;
   public loading: boolean = false;
 
-  // ⚡ Variables de Firebase
+  
   public mensajesChat: any[] = []; 
   private chatSub!: Subscription;
 
-  // 🟢 Variables para el Selector de Clientes
+  
   public clientes: any[] = [];
   public clientesFiltrados: any[] = [];
   public filtroCliente: string = '';
@@ -67,7 +67,7 @@ export class OportunidadComponent implements OnInit, AfterViewInit, OnDestroy {
   private loginService = inject(LoginService);
   private toastr = inject(ToastrService);
   private chatService = inject(ChatService);
-  private clienteService = inject(ClienteService); // 👈 Inyectamos ClienteService
+  private clienteService = inject(ClienteService); 
 
   ngOnInit(): void {
     this.esAdmin = this.loginService.getIsAdmin();
@@ -79,7 +79,7 @@ export class OportunidadComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
 
-    // 🟢 Cargar Clientes e inicializar el input
+    
     this.cargarClientes();
     if (this.oportunidad?.datosCliente?.razon_social) {
       this.filtroCliente = this.oportunidad.datosCliente.razon_social;
@@ -101,7 +101,7 @@ export class OportunidadComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // 🟢 Métodos del Buscador de Clientes
+  
   cargarClientes(): void {
     this.clienteService.getClientes().subscribe({
       next: (data) => {

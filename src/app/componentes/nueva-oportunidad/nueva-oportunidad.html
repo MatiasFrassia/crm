@@ -18,7 +18,7 @@
         >
       </div>
 
-      <!-- Buscador de Usuario Asignado (Solo Admin) -->
+      
       @if (esAdmin) {
         <div class="form-group selector-usuario-container">
           <label>Usuario Asignado</label>
@@ -107,7 +107,7 @@
         >
       </div>
 
-      <!-- Monto Estimado (Modificado para usar appInputMoneda) -->
+      
       <div class="form-group">
         <label>Monto Estimado ($)</label>
         <input 
@@ -119,7 +119,7 @@
         >
       </div>
 
-      <!-- NUEVO: Margen Ganancia (Usa appCalculadoraMargen) -->
+      
       <div class="form-group">
         <label>Margen Ganancia (%)</label>
         <input 
@@ -133,7 +133,7 @@
         >
       </div>
 
-      <!-- NUEVO: Precio de Venta (Usa appInputMoneda) -->
+      
       <div class="form-group">
         <label>Precio de Venta ($)</label>
         <input 
@@ -145,7 +145,7 @@
         >
       </div>
 
-      <!-- Plazo Pago Proveedor -->
+      
       <div class="form-group">
         <label>Plazo Pago Proveedor</label>
         <input 
@@ -156,7 +156,7 @@
         >
       </div>
 
-      <!-- Plazo Pago Cliente -->
+      
       <div class="form-group">
         <label>Plazo Pago Cliente</label>
         <input 
@@ -167,7 +167,7 @@
         >
       </div>
 
-      <!-- Observaciones -->
+      
       <div class="form-group full-width">
         <label>Observaciones Iniciales</label>
         <textarea 
@@ -178,7 +178,7 @@
         ></textarea>
       </div>
 
-      <!-- Botones -->
+      
       <div class="form-actions full-width">
         <button type="submit" [disabled]="loading">
           {{ loading ? 'Guardando...' : 'Guardar' }}

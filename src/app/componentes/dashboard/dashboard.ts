@@ -23,21 +23,21 @@ export class DashboardComponent implements OnInit {
   public esAdmin = false;
   public cargando = true;
 
-  // 📊 GRÁFICO 1: Estados (Para TODOS)
+  
   public chartEstadoType: ChartType = 'doughnut';
   public chartEstadoData: ChartData<'doughnut'> = {
     labels: ['Perdida', 'Inicial', 'En Progreso', 'Best Case', 'Compromiso', 'Ganado'],
     datasets: [{ data: [0, 0, 0, 0, 0, 0], backgroundColor: ['#ef4444', '#94a3b8', '#3b82f6', '#8b5cf6', '#eab308', '#10b981'] }]
   };
 
-  // 📊 GRÁFICO 2: Oportunidades por Usuario (Solo ADMIN)
+  
   public chartUsuarioType: ChartType = 'bar';
   public chartUsuarioData: ChartData<'bar'> = {
     labels: [],
     datasets: [{ data: [], label: 'Oportunidades Asignadas', backgroundColor: '#3b82f6' }]
   };
 
-  // 📊 GRÁFICO 3: Productos más solicitados (Solo ADMIN)
+  
   public chartProductoType: ChartType = 'pie';
   public chartProductoData: ChartData<'pie'> = {
     labels: [],
@@ -55,7 +55,7 @@ export class DashboardComponent implements OnInit {
     const idUsuario = Number(usuarioActual?.id_usuario || usuarioActual?.id);
 
     if (this.esAdmin) {
-      // Admin: Trae Oportunidades y Usuarios en paralelo
+      
       forkJoin({
         oportunidades: this.oportunidadService.getOportunidades(),
         usuarios: this.usuarioService.getAllUsuarios()
@@ -68,7 +68,7 @@ export class DashboardComponent implements OnInit {
         }
       });
     } else {
-      // Normal: Trae solo sus oportunidades
+      
       this.oportunidadService.getOportunidadesPorUsuario(idUsuario).subscribe({
         next: (oportunidades) => {
           this.procesarEstados(oportunidades);

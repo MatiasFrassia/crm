@@ -31,14 +31,14 @@ export class HistorialComponent implements OnInit {
     const usuarioActual = this.loginService.getUsuarioActual();
     const idUsuario = usuarioActual?.id_usuario || usuarioActual?.id;
 
-    // Si es admin ve todas, sino solo las de su usuario
+    
     const request = this.esAdmin 
       ? this.oportunidadService.getOportunidades() 
       : this.oportunidadService.getOportunidadesPorUsuario(idUsuario);
 
     request.subscribe({
       next: (data) => {
-        // Filtramos exclusivamente las cerradas (0: Perdida, 100: Ganada)
+        
         this.oportunidadesHistorial = data.filter(op => Number(op.avance_proyecto) === 0 || Number(op.avance_proyecto) === 100);
         this.listaFiltrada = this.oportunidadesHistorial;
       },

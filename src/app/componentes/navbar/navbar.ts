@@ -17,12 +17,12 @@ export class Navbar implements OnInit {
   public router = inject(Router);
   public themeService = inject(ThemeService);
 
-  // Enlazamos directamente con los Observables del LoginService
+  
   public isAdmin$: Observable<boolean> = this.loginService.isAdmin$;
-  public isCliente$: Observable<boolean> = this.loginService.isCliente$; // 👈 Agregamos el observador de clientes
+  public isCliente$: Observable<boolean> = this.loginService.isCliente$; 
 
   ngOnInit(): void {
-    // Verifica si hay una sesión guardada en localStorage al F5 / recarga
+    
     this.loginService.checkAuth();
   }
 

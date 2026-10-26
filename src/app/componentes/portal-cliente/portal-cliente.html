@@ -5,9 +5,9 @@
 
     <form class="form-grid" (ngSubmit)="enviarPedido()">
       
-      <!-- Título -->
+      
       <div class="form-group full-width">
-        <!-- Cliente Autocompletado (Solo lectura) -->
+        
       <div class="form-group full-width">
         <label>Cliente Solicitante</label>
         <input 
@@ -28,7 +28,7 @@
         >
       </div>
 
-      <!-- Marca -->
+      
       <div class="form-group">
         <label>Marca de preferencia (Opcional)</label>
         <input 
@@ -39,7 +39,7 @@
         >
       </div>
 
-      <!-- Producto -->
+      
       <div class="form-group">
         <label>Modelo o Producto (Opcional)</label>
         <input 
@@ -50,7 +50,7 @@
         >
       </div>
 
-      <!-- Observaciones -->
+      
       <div class="form-group full-width">
         <label>Detalles adicionales</label>
         <textarea 
@@ -61,7 +61,7 @@
         ></textarea>
       </div>
 
-      <!-- Botones -->
+      
       <div class="form-actions full-width">
         <button type="submit" [disabled]="loading">
           {{ loading ? 'Enviando...' : 'Enviar Solicitud' }}

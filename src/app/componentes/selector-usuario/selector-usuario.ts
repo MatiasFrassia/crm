@@ -23,7 +23,7 @@ export class SelectorUsuario implements OnInit {
   constructor(private usuarioService: UsuarioService) {}
 
   ngOnInit(): void {
-    // 1. Carga asíncrona de usuarios desde la API MySQL
+    
     this.usuarioService.getAllUsuarios().subscribe({
       next: (data: Usuario[]) => {
         this.usuarios = data;
@@ -31,15 +31,13 @@ export class SelectorUsuario implements OnInit {
       error: (err) => console.error('Error al obtener usuarios:', err)
     });
 
-    // 2. Inicialización del texto de búsqueda si ya hay un usuario asignado
+    
     if (this.usuarioActual) {
       this.textoBusqueda = `${this.usuarioActual.nombre}${this.usuarioActual.apellido}`;
     }
   }
 
-  /**
-   * Filtra la lista de usuarios en tiempo real según el texto ingresado
-   */
+  
   filtrar(): void {
     const texto = this.textoBusqueda.trim().toLowerCase();
 
@@ -55,12 +53,10 @@ export class SelectorUsuario implements OnInit {
     );
   }
 
-  /**
-   * Selecciona un usuario del listado desplegable y emite el evento al padre
-   */
+  
   seleccionar(usuario: Usuario): void {
     this.textoBusqueda = `${usuario.nombre}${usuario.apellido}`;
     this.usuarioSeleccionado.emit(usuario);
-    this.usuariosFiltrados = []; // Oculta el menú desplegable tras la selección
+    this.usuariosFiltrados = []; 
   }
 }

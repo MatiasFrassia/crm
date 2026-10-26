@@ -165,7 +165,7 @@
         </form>
       </div>
 
-      <!-- COLUMNA DERECHA: CHAT EN TIEMPO REAL (FIREBASE) (35%) -->
+      
       <div class="columna-historial">
         
         <div class="historial-header">
@@ -174,11 +174,11 @@
         </div>
 
         <div class="historial-body" #historialBody>
-          <!-- ⚡ Iteramos sobre el array de Firebase (mensajesChat) -->
+          
           @for (msj of mensajesChat; track $index) {
             <div class="comentario-card">
               <div class="comentario-header">
-                <!-- Se muestra el nombre del usuario guardado en Firestore -->
+                
                 <span class="comentario-autor">{{ msj.usuario?.nombre }} {{ msj.usuario?.apellido }}</span>
                 <span class="comentario-fecha">{{ msj.createdAt | date:'short' }}</span>
               </div>
@@ -187,7 +187,7 @@
                 <p class="comentario-texto">{{ msj.texto }}</p>
               }
 
-              <!-- Enlace directo para ver/descargar el archivo PDF subido (desde Node.js) -->
+              
               @if (msj.archivo_adjunto) {
                 <div class="comentario-adjunto">
                   📄 
@@ -220,7 +220,7 @@
           }
 
           <div class="chat-input-wrapper">
-            <!-- Selección restringida a PDF e Imágenes -->
+            
             <input 
               type="file" 
               #fileInput 
@@ -241,7 +241,7 @@
               [disabled]="loading"
             >
 
-            <!-- ⚡ Botón vinculado al estado de carga -->
+            
             <button type="button" class="btn-agregar" (click)="agregarComentario()" [disabled]="loading">
               {{ loading ? '...' : 'Agregar' }}
             </button>

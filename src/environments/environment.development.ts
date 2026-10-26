@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3016/', // Cambia esto a la URL de tu API
+  apiUrl: 'http://localhost:3016/', 
   firebase: {
     apiKey: "AIzaSyBVLC3huOWBCFzrMAXf2B73jcZzrw_5SeE",
     authDomain: "crm-fapaz.firebaseapp.com",

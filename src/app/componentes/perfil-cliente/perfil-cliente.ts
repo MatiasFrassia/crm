@@ -20,7 +20,7 @@ export class PerfilClienteComponent implements OnInit {
   loading = false;
 
   ngOnInit() {
-    // Cargamos los datos actuales del localStorage
+    
     const usuarioActual = this.loginService.getUsuarioActual();
     if (usuarioActual) {
       this.cliente = { ...usuarioActual };
@@ -37,7 +37,7 @@ export class PerfilClienteComponent implements OnInit {
 
     this.clienteService.actualizarPerfil(this.cliente.id_cliente, this.cliente).subscribe({
       next: (res: any) => {
-        // Actualizamos el localStorage con los nuevos datos para que el resto de la app los reconozca
+        
         const clienteActualizado = { ...this.cliente, ...res.cliente, isCliente: true };
         localStorage.setItem('usuarioActual', JSON.stringify(clienteActualizado));
         
